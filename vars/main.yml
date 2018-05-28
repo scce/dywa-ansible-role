@@ -42,17 +42,20 @@ postgresql_user_privileges:
 
 
 wildfly_version: '10.1.0.Final'
-wildfly_home: '/opt/wildfly-{{wildfly_version}}'
 wildfly_download_path: '/tmp/wildfly-{{wildfly_version}}.tar.gz'
-wildfly_deployments_path: '{{wildfly_home}}/standalone/deployments/'
+wildfly_home: '/opt/wildfly-{{wildfly_version}}'
 wildfly_bin_path: '{{wildfly_home}}/bin/'
-wildfly_data_files_path: '{{wildfly_home}}/standalone/data/files/'
+wildfly_standalone_path: '{{wildfly_home}}/standalone/'
+wildfly_deployments_path: '{{wildfly_standalone_path}}/deployments/'
+wildfly_data_files_path: '{{wildfly_standalone_path}}data/files/'
+wildfly_logs_path: '{{wildfly_standalone_path}}/log/'
 
-wildfly_standalone_configuration_path: '{{wildfly_home}}/standalone/configuration/standalone.xml'
+wildfly_standalone_configuration_path: '{{wildfly_standalone_path}}/configuration/standalone.xml'
 
 dywa_version: '0.7'
 dywa_download_path: '/tmp/app-{{dywa_version}}.ear'
 dywa_url: 'https://ls5svn.cs.tu-dortmund.de/maven-public/de/ls5/dywa/app/{{dywa_version}}/app-{{dywa_version}}.ear'
+dywa_app_logs_path: '/var/log/dywa-{{ app_name }}/'
 
 postgresql_folder: '{{wildfly_home}}/modules/system/layers/base/org/postgresql/main/'
 postgresql_module_file: '{{postgresql_folder}}/module.xml'
@@ -60,3 +63,4 @@ postgresql_module_file: '{{postgresql_folder}}/module.xml'
 ecplipselink_folder: '{{wildfly_home}}/modules/system/layers/base/org/eclipse/persistence/main/'
 ecplipselink_module_file: '{{ecplipselink_folder}}/module.xml'
 
+restic_version: '0.9.0'

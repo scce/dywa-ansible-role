@@ -1,0 +1,64 @@
+- name: check if restic is installed
+  stat: path=/usr/local/bin/restic
+  register: restic_stat_result
+
+- name: download restic
+  get_url:
+    url: 'https://github.com/restic/restic/releases/download/v{{ restic_version }}/restic_{{ restic_version }}_linux_amd64.bz2'
+    dest: '/tmp/restic_{{ restic_version }}_linux_amd64.bz2'
+    checksum: sha256:82c596e4b30f9be61f942b26948a5e51c6910e36073f6c5e531ddca8f60356d1
+  when: restic_stat_result.stat.exists == False
+
+- name: unarchive restic
+  command: 'bzip2 -dk /tmp/restic_{{ restic_version }}_linux_amd64.bz2'
+  when: restic_stat_result.stat.exists == False
+
+- name: make restic executable
+  file:
+    path: '/tmp/restic_{{ restic_version }}_linux_amd64'
+    mode: 0755
+  when: restic_stat_result.stat.exists == False
+
+- name: move restic
+  command: 'mv /tmp/restic_{{ restic_version }}_linux_amd64 /usr/local/bin/restic'
+  when: restic_stat_result.stat.exists == False
+
+- name: add backup user
+  user:
+    name: '{{ backup_user }}'
+    createhome: yes
+    shell: /usr/sbin/nologin
+
+- name: install backup script
+  template:
+    src: ../files/restic/backup.sh.j2
+    dest: '/home/{{ backup_user }}/backup.sh'
+
+- name: install repository password file
+  template:
+    src: ../files/restic/repository-password.j2
+    dest: '/home/{{ backup_user }}/repository-password'
+    mode: 0400
+
+- name: install crontab
+  template:
+    src: ../templates/restic/backup.cron.j2
+    dest: /etc/cron.d/backup
+    mode: 0644
+    owner: root
+    group: root
+  when: backup_restore_server is undefined
+#
+#- name: Add backup commands to sudoers
+#  lineinfile:
+#    dest: /etc/sudoers
+#    state: present
+#    regexp: '^Cmnd_Alias BACKUP_CMDS ='
+#    line: 'Cmnd_Alias BACKUP_CMDS = /bin/bash /home/{{ backup_user }}/backup.sh, /bin/bash /home/{{ backup_user }}/init.sh, /bin/bash /home/{{ backup_user }}/restore.sh, /bin/bash /home/{{ backup_user }}/snapshots.sh'
+#
+#- name: Add backup user to sudoers
+#  lineinfile:
+#    dest: /etc/sudoers
+#    state: present
+#    regexp: '^{{ backup_user }}'
+#    line: '{{ backup_user }} ALL=(ALL) NOPASSWD: BACKUP_CMDS'

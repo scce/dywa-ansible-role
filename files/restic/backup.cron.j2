@@ -1,0 +1,3 @@
+# /etc/cron.d/backup: crontab entries for backup
+
+@midnight {{ backup_user }} sudo /bin/bash /home/{{ backup_user }}/backup.sh

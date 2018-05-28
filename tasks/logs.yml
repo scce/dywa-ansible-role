@@ -1,6 +1,6 @@
 - name: create log folder
   file:
-    path: '/var/log/dywa-{{ app_name }}/'
+    path: '{{ dywa_app_logs_path }}'
     owner: wildfly
     group: wildfly
     state: directory

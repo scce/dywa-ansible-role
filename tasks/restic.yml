@@ -33,12 +33,16 @@
   template:
     src: ../files/restic/backup.bash.j2
     dest: '/home/{{ backup_user }}/backup.bash'
+    owner: '{{ backup_user }}'
+    group: '{{ backup_user }}'
     mode: 0500
 
 - name: install repository password file
   template:
     src: ../files/restic/repository-password.j2
     dest: '/home/{{ backup_user }}/repository-password'
+    owner: '{{ backup_user }}'
+    group: '{{ backup_user }}'
     mode: 0400
 
 - name: install crontab

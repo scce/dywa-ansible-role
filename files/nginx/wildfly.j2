@@ -9,7 +9,7 @@ upstream mailcatcher {
 {% endif %}
 
 server {
-    listen {{ domain_name }}:443 ssl default deferred;
+    listen {{ domain_name }}:443 ssl http2 default deferred;
     server_name {{ domain_name }};
 
     {% include './partials/ssl.j2' %}

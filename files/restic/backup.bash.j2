@@ -70,10 +70,10 @@ function doInstallVerification {
 }
 # perform actual backup
 function doBackup {
-  runuser -l postgres -c 'pg_dumpall --clean' | runRestic backup --stdin --stdin-filename ${PGDUMP_SQL_FILE} --tag database
-  runRestic backup ${WILDFLY_FILES_PATH} --tag wildfly-files
-  runRestic backup ${WILDFLY_LOGS_PATH} --tag wildfly-logs
-  runRestic backup ${DYWA_APP_LOGS_PATH} --tag equinocs-logs
+  TAG=$1
+  runuser -l postgres -c 'pg_dumpall --clean' | runRestic backup --stdin --stdin-filename ${PGDUMP_SQL_FILE} --tag database --tag "${TAG}"  runRestic backup ${WILDFLY_FILES_PATH} --tag wildfly-files
+  runRestic backup ${WILDFLY_LOGS_PATH} --tag wildfly-logs --tag "${TAG}"
+  runRestic backup ${DYWA_APP_LOGS_PATH} --tag equinocs-logs --tag "${TAG}"
 }
 
 # interactive restore
@@ -87,28 +87,26 @@ function doRestore {
 
  echo ${LATEST_DB_BACKUP} ${LATEST_WFFILES_BACKUP} ${LATEST_WFLOG_BACKUP}  ${LATEST_EQLOG_BACKUP}
 
-  doBackup
+  doBackup preRestore
 
   if [ ! -z ${LATEST_DB_BACKUP} ] ; then
     echo restoring database...
     runRestic dump ${LATEST_DB_BACKUP} --path=${PGDUMP_SQL_FILE}  ${PGDUMP_SQL_FILE} | runuser -l postgres -c 'psql'
   fi
 
-  rm ${WILDFLY_FILES_PATH} ${WILDFLY_LOGS_PATH} ${DYWA_APP_LOGS_PATH} --preserve-root -rf
-
   if [ ! -z ${LATEST_WFFILES_BACKUP} ] ; then
     rm ${WILDFLY_FILES_PATH}  --preserve-root -rf
-    runRestic restore  ${LATEST_WFFILES_BACKUP} --path ${WILDFLY_FILES_PATH} --target  ${WILDFLY_FILES_PATH%/*}
+    runRestic restore  ${LATEST_WFFILES_BACKUP} --path ${WILDFLY_FILES_PATH} --target /
   fi
 
   if [ ! -z ${LATEST_WFLOG_BACKUP} ] ; then
     rm ${WILDFLY_LOGS_PATH}  --preserve-root -rf
-    runRestic restore  ${LATEST_WFLOG_BACKUP} --path ${WILDFLY_LOGS_PATH} --target  ${WILDFLY_LOGS_PATH%/*}
+    runRestic restore  ${LATEST_WFLOG_BACKUP} --path ${WILDFLY_LOGS_PATH} --target /
   fi
 
   if [ ! -z ${LATEST_EQLOG_BACKUP} ] ; then
     rm ${DYWA_APP_LOGS_PATH}  --preserve-root -rf
-    runRestic restore  ${LATEST_EQLOG_BACKUP} --path ${DYWA_APP_LOGS_PATH} --target  ${DYWA_APP_LOGS_PATH%/*}
+    runRestic restore  ${LATEST_EQLOG_BACKUP} --path ${DYWA_APP_LOGS_PATH} --target /
   fi
 }
 
@@ -123,7 +121,7 @@ esac
 
 # perform cleanup
 function doCleanup {
-  runRestic forget --keep-last 5  --keep-weekly 3 --keep-monthly 1 --keep-yearly 1 --prune
+  runRestic forget --keep-last 12 --keep-daily 3  --keep-weekly 3 --keep-monthly 1 --keep-yearly 1 --prune
 }
 
 function printHelp {
@@ -200,6 +198,6 @@ STATUS=$?
 
 if [[ "${@#restore}" != "$@" ]] ;then doRestore "$@" exit $? ;fi
 if [[ "${@#init}" != "$@" ]] ;then doInit "$@" ;fi
-if [[ "${@#backup}" != "$@" ]] ;then doBackup "$@" ;fi
+if [[ "${@#backup}" != "$@" ]] ;then doBackup ;fi
 if [[ "${@#cleanup}" != "$@" ]] ;then doCleanup "$@" ;fi
 if [[ "${@#check}" != "$@" ]] ;then doCheck "$@" ;fi

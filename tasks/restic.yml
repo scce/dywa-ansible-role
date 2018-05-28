@@ -31,8 +31,9 @@
 
 - name: install backup script
   template:
-    src: ../files/restic/backup.sh.j2
-    dest: '/home/{{ backup_user }}/backup.sh'
+    src: ../files/restic/backup.bash.j2
+    dest: '/home/{{ backup_user }}/backup.bash'
+    mode: 0500
 
 - name: install repository password file
   template:
@@ -42,7 +43,7 @@
 
 - name: install crontab
   template:
-    src: ../templates/restic/backup.cron.j2
+    src: ../files/restic/backup.cron.j2
     dest: /etc/cron.d/backup
     mode: 0644
     owner: root
@@ -63,5 +64,5 @@
 #    regexp: '^{{ backup_user }}'
 #    line: '{{ backup_user }} ALL=(ALL) NOPASSWD: BACKUP_CMDS'
 
-- name: init restic repository
-  command: '/home/{{ backup_user }}/backup.sh init'
+#- name: init restic repository
+#  command: '/home/{{ backup_user }}/backup.sh init'

@@ -4,7 +4,7 @@
 set -e
 RESTIC_REPO=/tmp/resticbackup
 #RESTIC_REPO=sftp:user@host:/tmp/resticbackup
-RESTIC_PASSWORD_FILE=/tmp/restic-password
+RESTIC_PASSWORD_FILE=/home/{{ backup_user }}/repository-password
 
 WILDFLY_FILES_PATH={{ wildfly_data_files_path }}
 WILDFLY_LOGS_PATH={{ wildfly_logs_path }}

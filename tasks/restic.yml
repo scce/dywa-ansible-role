@@ -68,5 +68,5 @@
 #    regexp: '^{{ backup_user }}'
 #    line: '{{ backup_user }} ALL=(ALL) NOPASSWD: BACKUP_CMDS'
 
-#- name: init restic repository
-#  command: '/home/{{ backup_user }}/backup.sh init'
+- name: init restic repository
+  command: "su -s /bin/bash -c '/home/{{ backup_user }}/backup.bash init' {{ backup_user }}"

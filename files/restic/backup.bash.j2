@@ -71,7 +71,8 @@ function doInstallVerification {
 # perform actual backup
 function doBackup {
   TAG=$1
-  runuser -l postgres -c 'pg_dumpall --clean' | runRestic backup --stdin --stdin-filename ${PGDUMP_SQL_FILE} --tag database --tag "${TAG}"  runRestic backup ${WILDFLY_FILES_PATH} --tag wildfly-files
+  runuser -l postgres -c 'pg_dumpall --clean' | runRestic backup --stdin --stdin-filename ${PGDUMP_SQL_FILE} --tag database --tag "${TAG}"
+  runRestic backup ${WILDFLY_FILES_PATH} --tag wildfly-files --tag "${TAG}"
   runRestic backup ${WILDFLY_LOGS_PATH} --tag wildfly-logs --tag "${TAG}"
   runRestic backup ${DYWA_APP_LOGS_PATH} --tag equinocs-logs --tag "${TAG}"
 }

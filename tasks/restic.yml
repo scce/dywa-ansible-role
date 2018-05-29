@@ -45,28 +45,21 @@
     group: '{{ backup_user }}'
     mode: 0400
 
-- name: install crontab
-  template:
-    src: ../files/restic/backup.cron.j2
-    dest: /etc/cron.d/backup
-    mode: 0644
-    owner: root
-    group: root
-  when: backup_restore_server is undefined
-#
-#- name: Add backup commands to sudoers
-#  lineinfile:
-#    dest: /etc/sudoers
-#    state: present
-#    regexp: '^Cmnd_Alias BACKUP_CMDS ='
-#    line: 'Cmnd_Alias BACKUP_CMDS = /bin/bash /home/{{ backup_user }}/backup.sh, /bin/bash /home/{{ backup_user }}/init.sh, /bin/bash /home/{{ backup_user }}/restore.sh, /bin/bash /home/{{ backup_user }}/snapshots.sh'
-#
-#- name: Add backup user to sudoers
-#  lineinfile:
-#    dest: /etc/sudoers
-#    state: present
-#    regexp: '^{{ backup_user }}'
-#    line: '{{ backup_user }} ALL=(ALL) NOPASSWD: BACKUP_CMDS'
+#- name: install crontab
+#  template:
+#    src: ../files/restic/backup.cron.j2
+#    dest: /etc/cron.d/backup
+#    mode: 0644
+#    owner: root
+#    group: root
+#  when: backup_restore_server is undefined
+
+- name: Add backup user to sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^{{ backup_user }}'
+    line: '{{ backup_user }} ALL=(ALL) NOPASSWD: /home/{{ backup_user }}/backup.bash backup'
 
 - name: init restic repository
   command: "su -s /bin/bash -c '/home/{{ backup_user }}/backup.bash init' {{ backup_user }}"

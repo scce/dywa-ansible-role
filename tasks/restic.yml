@@ -45,14 +45,14 @@
     group: '{{ backup_user }}'
     mode: 0400
 
-#- name: install crontab
-#  template:
-#    src: ../files/restic/backup.cron.j2
-#    dest: /etc/cron.d/backup
-#    mode: 0644
-#    owner: root
-#    group: root
-#  when: backup_restore_server is undefined
+- name: install crontab
+  template:
+    src: ../files/restic/backup.cron.j2
+    dest: /etc/cron.d/backup
+    mode: 0644
+    owner: root
+    group: root
+  when: backup_restore_server is undefined
 
 - name: Add backup user to sudoers
   lineinfile:

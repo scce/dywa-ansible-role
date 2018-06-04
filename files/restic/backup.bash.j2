@@ -2,6 +2,7 @@
 # Basic Configuration
 
 set -e
+RESTIC_EXECUTABLE=/usr/local/bin/restic
 RESTIC_REPO=/tmp/resticbackup
 #RESTIC_REPO=sftp:user@host:/tmp/resticbackup
 RESTIC_PASSWORD_FILE=/home/{{ backup_user }}/repository-password
@@ -13,7 +14,7 @@ PGDUMP_SQL_FILE=pgdump.sql
 
 # wrapper for restic call
 function runRestic {
-  restic -r ${RESTIC_REPO} --password-file ${RESTIC_PASSWORD_FILE} "$@"
+  ${RESTIC_EXECUTABLE} -r ${RESTIC_REPO} --password-file ${RESTIC_PASSWORD_FILE} "$@"
 }
 
 # initialize repository
@@ -54,7 +55,7 @@ function doCheck {
 
 # perform installation verification
 function doInstallVerification {
-  if [[ ! -x `which restic` ]] ;then
+  if [[ ! -x ${RESTIC_EXECUTABLE} ]] ;then
     (>&2 echo "restic executable not found.");
     return 127
   fi
@@ -71,7 +72,7 @@ function doInstallVerification {
 # perform actual backup
 function doBackup {
   TAG=$1
-  runuser -l postgres -c 'pg_dumpall --clean' | runRestic backup --stdin --stdin-filename ${PGDUMP_SQL_FILE} --tag database --tag "${TAG}"
+  sudo -u postgres /usr/bin/pg_dumpall --clean | runRestic backup --stdin --stdin-filename ${PGDUMP_SQL_FILE} --tag database --tag "${TAG}"
   runRestic backup ${WILDFLY_FILES_PATH} --tag wildfly-files --tag "${TAG}"
   runRestic backup ${WILDFLY_LOGS_PATH} --tag wildfly-logs --tag "${TAG}"
   runRestic backup ${DYWA_APP_LOGS_PATH} --tag equinocs-logs --tag "${TAG}"

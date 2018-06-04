@@ -4,3 +4,4 @@
 - import_tasks: deployment.yml
 - import_tasks: logs.yml
 - import_tasks: restic.yml
+- import_tasks: sudoers.yml

@@ -1,5 +1,3 @@
-{% for user in sudoers %}
-    {% for command in user.commands %}
-		{{ user.username }} ALL=({{ command.runasuser }}:{{ command.runasgroup }}) NOPASSWD: {{ command.command }}
-    {% endfor %}
-{% endfor %}
+{% for user in sudoers %}{% for command in user.commands %}
+{{ user.username }} ALL=({{ command.runasuser }}:{{ command.runasgroup }}) NOPASSWD: {{ command.command }}
+{% endfor %}{% endfor %}

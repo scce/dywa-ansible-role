@@ -46,12 +46,12 @@
     mode: 0400
 
 - name: install crontab
-  template:
-    src: ../files/restic/backup.cron.j2
-    dest: /etc/cron.d/backup
-    mode: 0644
-    owner: root
-    group: root
+  cron:
+    name: 'restic backup'
+    minute: '8'
+    hour: '*/6'
+    job: '/home/{{ backup_user }}/backup.bash backup'
+    user: '{{ backup_user }}'
   when: backup_restore_server is undefined
 
 - name: init restic repository

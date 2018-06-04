@@ -54,12 +54,5 @@
     group: root
   when: backup_restore_server is undefined
 
-- name: Add backup user to sudoers
-  lineinfile:
-    dest: /etc/sudoers
-    state: present
-    regexp: '^{{ backup_user }}'
-    line: '{{ backup_user }} ALL=(ALL) NOPASSWD: /home/{{ backup_user }}/backup.bash backup'
-
 - name: init restic repository
   command: "su -s /bin/bash -c '/home/{{ backup_user }}/backup.bash init' {{ backup_user }}"

@@ -1,0 +1,23 @@
+sudoers:
+  - username: '{{deployment_user}}'
+    commands:
+      - command: /bin/systemctl start wildfly.service
+        runasuser: ALL
+        runasgroup: ALL
+      - command: /bin/systemctl stop wildfly.service
+        runasuser: ALL
+        runasgroup: ALL
+      - command: /bin/systemctl restart wildfly.service
+        runasuser: ALL
+        runasgroup: ALL
+      #- command: /bin/systemctl status wildfly.service
+      #  runasuser: ALL
+      #  runasgroup: ALL
+      - command: /home/dime/purge_db.sh'
+        runasuser: ALL
+        runasgroup: ALL
+  - username: '{{ backup_user }}'
+    commands:
+      - command: '/home/{{ backup_user }}/backup.bash backup'
+        runasuser: ALL
+        runasgroup: ALL

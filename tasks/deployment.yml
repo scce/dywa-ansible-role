@@ -5,10 +5,3 @@
     group: '{{deployment_user}}'
     groups: wildfly
     state: present
-
-- name: Add deploy commands to sudoers
-  lineinfile:
-    dest: /etc/sudoers
-    state: present
-    regexp: '^{{deployment_user}}    ALL=\(ALL\) NOPASSWD'
-    line: '{{deployment_user}}    ALL=(ALL) NOPASSWD: /bin/systemctl start wildfly.service, /bin/systemctl stop wildfly.service, /bin/systemctl restart wildfly.service, /bin/systemctl status wildfly.service, /home/dime/purge_db.sh'

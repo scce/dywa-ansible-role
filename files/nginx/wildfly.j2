@@ -1,5 +1,6 @@
 upstream wildfly {
     server 127.0.0.1:8080;
+    keepalive {{ keepalive_connections }};
 }
 
 {% if deployment_tier != 'production' %}

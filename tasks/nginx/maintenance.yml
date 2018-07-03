@@ -22,4 +22,3 @@
     path: /etc/nginx/sites-enabled/wildfly-websockets
     state: absent
   notify: 'restart nginx'
-

@@ -7,8 +7,8 @@ events {
 }
 
 http {
-{% if deployment_tier == 'testing' %}
-    allow {{ allow_testing_address }};
+{% if allow_access_address is defined %}
+    allow {{ allow_access_address }};
     deny  all;
 {% endif %}
     sendfile on;

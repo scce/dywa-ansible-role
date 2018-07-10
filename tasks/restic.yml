@@ -52,7 +52,14 @@
     hour: '*/6'
     job: '/home/{{ backup_user }}/backup.bash backup'
     user: '{{ backup_user }}'
+  cron:
+    name: 'restic cleanup'
+    special_time: 'daily'
+    job: '/home/{{ backup_user }}/backup.bash cleanup'
+    user: '{{ backup_user }}'
   when: backup_restore_server is undefined
+
+
 
 - name: init restic repository
   command: "su -s /bin/bash -c '/home/{{ backup_user }}/backup.bash init' {{ backup_user }}"

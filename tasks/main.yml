@@ -1,3 +1,4 @@
+- import_tasks: packages.yml
 - import_tasks: nginx.yml
 - import_tasks: wildfly.yml
 - import_tasks: dywa.yml

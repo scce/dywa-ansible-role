@@ -1,7 +1,7 @@
 #!/bin/bash
 # Basic Configuration
 
-set -e
+##set -e
 RESTIC_EXECUTABLE=/usr/local/bin/restic
 RESTIC_REPO=sftp:{{ backup_remote_user }}@{{ backup_remote_host }}:restic/{{ ansible_hostname }}/
 RESTIC_PASSWORD_FILE=/home/{{ backup_user }}/repository-password
@@ -81,10 +81,15 @@ function doBackup {
 function doRestore {
   checkForRestore
 
-  LATEST_DB_BACKUP=$(runRestic snapshots --path ${PGDUMP_SQL_FILE} --last  | tail -n +3 | head -n -2 | cut -d" " -f1)
-  LATEST_WFFILES_BACKUP=$(runRestic snapshots --path ${WILDFLY_FILES_PATH} --last | tail -n +3 | head -n -2 | cut -d" " -f1)
-  LATEST_WFLOG_BACKUP=$(runRestic snapshots --path ${WILDFLY_LOGS_PATH} --last | tail -n +3 | head -n -2 | cut -d" " -f1)
-  LATEST_EQLOG_BACKUP=$(runRestic snapshots --path ${DYWA_APP_LOGS_PATH} --last | tail -n +3 | head -n -2 | cut -d" " -f1)
+  TAG=",complete"
+  if [[ "${@#--revert-restore}" != "$@" ]] ; then
+	TAG=",preRestore"
+  fi
+
+  LATEST_DB_BACKUP=$(runRestic snapshots --tag database"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+  LATEST_WFFILES_BACKUP=$(runRestic snapshots --tag wildfly-files"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+  LATEST_WFLOG_BACKUP=$(runRestic snapshots --tag wildfly-logs"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+  LATEST_EQLOG_BACKUP=$(runRestic snapshots --tag equinocs-logs"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
 
  echo ${LATEST_DB_BACKUP} ${LATEST_WFFILES_BACKUP} ${LATEST_WFLOG_BACKUP}  ${LATEST_EQLOG_BACKUP}
 
@@ -92,22 +97,25 @@ function doRestore {
 
   if [ ! -z ${LATEST_DB_BACKUP} ] ; then
     echo restoring database...
-    runRestic dump ${LATEST_DB_BACKUP} --path=${PGDUMP_SQL_FILE}  ${PGDUMP_SQL_FILE} | runuser -l postgres -c 'psql'
+    runRestic dump ${LATEST_DB_BACKUP} |  sudo -u postgres /usr/bin/psql
   fi
 
   if [ ! -z ${LATEST_WFFILES_BACKUP} ] ; then
+    echo restoring ${WILDFLY_FILES_PATH}...
     rm ${WILDFLY_FILES_PATH}  --preserve-root -rf
-    runRestic restore  ${LATEST_WFFILES_BACKUP} --path ${WILDFLY_FILES_PATH} --target /
+    runRestic restore  ${LATEST_WFFILES_BACKUP} --target /
   fi
 
   if [ ! -z ${LATEST_WFLOG_BACKUP} ] ; then
+    echo restoring ${LATEST_WFLOG_BACKUP}...
     rm ${WILDFLY_LOGS_PATH}  --preserve-root -rf
-    runRestic restore  ${LATEST_WFLOG_BACKUP} --path ${WILDFLY_LOGS_PATH} --target /
+    runRestic restore  ${LATEST_WFLOG_BACKUP}  --target /
   fi
 
   if [ ! -z ${LATEST_EQLOG_BACKUP} ] ; then
+    echo restoring ${LATEST_EQLOG_BACKUP}...
     rm ${DYWA_APP_LOGS_PATH}  --preserve-root -rf
-    runRestic restore  ${LATEST_EQLOG_BACKUP} --path ${DYWA_APP_LOGS_PATH} --target /
+    runRestic restore  ${LATEST_EQLOG_BACKUP} --target /
   fi
 }
 
@@ -131,16 +139,17 @@ echo "Usage: $0 [init|backup|cleanup|check|help] [--force-init]
 
 Performs backup and restore operations on specified backup repository.
 
-  init                 Initialize a new backup repository, operation is idempotent unless --force-init flag is set.
-  backup               Create a new backup for database,wildfly files and logs.
-  check                Checks the underlying backup repository for consistency.
-  help                 Prints this help text.
+  init             Initialize a new backup repository, operation is idempotent unless --force-init flag is set.
+  backup           Create a new backup for database,wildfly files and logs.
+  check            Checks the underlying backup repository for consistency.
+  help             Prints this help text.
   snapshots        Lists all existing snapshots of given repository.
   restore          restore latest snapshot.
 
- --force-init          Initilize a new repository even if a valid repository exists.
-               A backup of the overwritten repository is created.
- --check-data          Also check repository data files for inconsistencies.
+ --revert-restore  Undoes the previous restore operation
+ --force-init      Initilize a new repository even if a valid repository exists.
+               	     A backup of the overwritten repository is created.
+ --check-data      Also check repository data files for inconsistencies.
 
 At least one operation must be given."
 
@@ -179,8 +188,8 @@ return -6
 i=1
   for arg in "$@" ; do
     case "${arg}" in
-      init|backup|cleanup|check|help|restore|--force-init|--check-data) ;;
-      snapshots) runRestic snapshots;;
+      init|backup|cleanup|check|help|restore|--force-init|--check-data|--revert-restore) ;;
+      snapshots) runRestic snapshots -c;;
       *) echo  "ignoring unknown operation ${arg}" ; let i++ ;;
     esac
   done
@@ -199,6 +208,6 @@ STATUS=$?
 
 if [[ "${@#restore}" != "$@" ]] ;then doRestore "$@" exit $? ;fi
 if [[ "${@#init}" != "$@" ]] ;then doInit "$@" ;fi
-if [[ "${@#backup}" != "$@" ]] ;then doBackup ;fi
+if [[ "${@#backup}" != "$@" ]] ;then doBackup "complete" ;fi
 if [[ "${@#cleanup}" != "$@" ]] ;then doCleanup "$@" ;fi
 if [[ "${@#check}" != "$@" ]] ;then doCheck "$@" ;fi

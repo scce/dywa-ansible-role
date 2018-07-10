@@ -3,8 +3,7 @@
 
 set -e
 RESTIC_EXECUTABLE=/usr/local/bin/restic
-RESTIC_REPO=/tmp/resticbackup
-#RESTIC_REPO=sftp:user@host:/tmp/resticbackup
+RESTIC_REPO=sftp:{{ backup_remote_user }}@{{ backup_remote_host }}:restic/{{ ansible_hostname }}/
 RESTIC_PASSWORD_FILE=/home/{{ backup_user }}/repository-password
 
 WILDFLY_FILES_PATH={{ wildfly_data_files_path }}

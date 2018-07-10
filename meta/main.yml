@@ -11,4 +11,6 @@ galaxy_info:
   galaxy_tags:
    - dywa
 dependencies:
-  - { role: ANXS.postgresql }
+  - src: ANXS.postgresql
+    version: 1.9.0
+    name: ANXS.postgresql

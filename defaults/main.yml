@@ -18,3 +18,4 @@ sudoers:
       - command: '/usr/bin/pg_dumpall --clean'
         runasuser: postgres
         runasgroup: postgres
+keepalive_connections: 32

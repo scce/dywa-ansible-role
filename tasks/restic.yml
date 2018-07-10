@@ -29,6 +29,30 @@
     createhome: yes
     shell: /usr/sbin/nologin
 
+- name: create ssh folder for backup user
+  file:
+    path: '/home/{{ backup_user }}/.ssh/'
+    state: directory
+    owner: '{{ backup_user }}'
+    group: '{{ backup_user }}'
+    mode: 0700
+
+- name: copy private key for backup user
+  copy:
+    src: '{{ playbook_dir }}/{{ backup_user_id_rsa_path }}'
+    dest: '/home/{{ backup_user }}/.ssh/id_rsa'
+    owner: '{{ backup_user }}'
+    group: '{{ backup_user }}'
+    mode: 0600
+
+- name: copy ssh config for backup user
+  template:
+    src: ../files/restic/ssh-config.j2
+    dest: '/home/{{ backup_user }}/.ssh/config'
+    owner: '{{ backup_user }}'
+    group: '{{ backup_user }}'
+    mode: 0600
+
 - name: install backup script
   template:
     src: ../files/restic/backup.bash.j2
@@ -45,13 +69,15 @@
     group: '{{ backup_user }}'
     mode: 0400
 
-- name: install crontab
+- name: install restic backup crontab
   cron:
     name: 'restic backup'
     minute: '8'
     hour: '*/6'
     job: '/home/{{ backup_user }}/backup.bash backup'
     user: '{{ backup_user }}'
+
+- name: install restic cleanup crontab
   cron:
     name: 'restic cleanup'
     special_time: 'daily'

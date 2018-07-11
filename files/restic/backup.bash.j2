@@ -6,6 +6,7 @@ RESTIC_EXECUTABLE=/usr/local/bin/restic
 RESTIC_REPO=sftp:{{ backup_remote_user }}@{{ backup_remote_host }}:restic/{{ ansible_hostname }}/
 RESTIC_PASSWORD_FILE=/home/{{ backup_user }}/repository-password
 
+WILDFLY_DEPLOY_PATH={{ wildfly_deployments_path }}
 WILDFLY_FILES_PATH={{ wildfly_data_files_path }}
 WILDFLY_LOGS_PATH={{ wildfly_logs_path }}
 DYWA_APP_LOGS_PATH={{ dywa_app_logs_path }}
@@ -72,6 +73,7 @@ function doInstallVerification {
 function doBackup {
   TAG=$1
   sudo -u postgres /usr/bin/pg_dumpall --clean | runRestic backup --stdin --stdin-filename ${PGDUMP_SQL_FILE} --tag database --tag "${TAG}"
+  runRestic backup ${WILDFLY_DEPLOY_PATH} --tag wildfly-deployments --tag "${TAG}"
   runRestic backup ${WILDFLY_FILES_PATH} --tag wildfly-files --tag "${TAG}"
   runRestic backup ${WILDFLY_LOGS_PATH} --tag wildfly-logs --tag "${TAG}"
   runRestic backup ${DYWA_APP_LOGS_PATH} --tag equinocs-logs --tag "${TAG}"
@@ -87,6 +89,7 @@ function doRestore {
   fi
 
   LATEST_DB_BACKUP=$(runRestic snapshots --tag database"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+  LATEST_WFDEPLOYMENTS_BACKUP=$(runRestic snapshots --tag wildfly-deployments"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
   LATEST_WFFILES_BACKUP=$(runRestic snapshots --tag wildfly-files"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
   LATEST_WFLOG_BACKUP=$(runRestic snapshots --tag wildfly-logs"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
   LATEST_EQLOG_BACKUP=$(runRestic snapshots --tag equinocs-logs"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
@@ -98,6 +101,12 @@ function doRestore {
   if [ ! -z ${LATEST_DB_BACKUP} ] ; then
     echo restoring database...
     runRestic dump ${LATEST_DB_BACKUP} |  sudo -u postgres /usr/bin/psql
+  fi
+
+  if [ ! -z ${LATEST_WFDEPLOYMENTS_BACKUP} ] ; then
+    rm ${WILDFLY_DEPLOY_PATH}  --preserve-root -rf
+    echo restoring ${WILDFLY_DEPLOY_PATH}
+    runRestic restore  ${LATEST_WFDEPLOYMENTS_BACKUP} --target /
   fi
 
   if [ ! -z ${LATEST_WFFILES_BACKUP} ] ; then

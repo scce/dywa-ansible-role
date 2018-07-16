@@ -84,7 +84,7 @@
     force: yes
   notify: 'wildfly config changed'
 
-- name: 'set mode of {{wildfly_home}}'
+- name: 'set ownership of {{wildfly_home}}'
   file:
     path: '{{wildfly_home}}'
     owner: wildfly
@@ -93,16 +93,27 @@
 
 - name: 'create and set mode of {{wildfly_data_files_path}}'
   file:
-    path: '{{wildfly_data_files_path}}'
-    owner: wildfly
     group: wildfly
+    mode: 'u=rwX,g=rwX,o='
+    owner: wildfly
+    path: '{{wildfly_data_files_path}}'
+    recurse: yes
     state: directory
-    mode: 0775
 
 - name: 'set mode of {{wildfly_deployments_path}}'
   file:
+    group: wildfly
+    mode: 'u=rwX,g=rwX,o='
+    owner: wildfly
     path: '{{wildfly_deployments_path}}'
-    mode: 0775
+    recurse: yes
+
+- name: 'set mode of {{wildfly_logs_path}}'
+  file:
+    group: wildfly
+    mode: 'u=rwX,g=rwX,o='
+    owner: wildfly
+    path: '{{wildfly_logs_path}}'
     recurse: yes
 
 - name: install wildfly.service file

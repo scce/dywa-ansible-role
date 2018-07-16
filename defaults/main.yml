@@ -1,1 +1,21 @@
+sudoers:
+  - username: '{{deployment_user}}'
+    commands:
+      - command: /bin/systemctl start wildfly.service
+        runasuser: ALL
+        runasgroup: ALL
+      - command: /bin/systemctl stop wildfly.service
+        runasuser: ALL
+        runasgroup: ALL
+      - command: /bin/systemctl restart wildfly.service
+        runasuser: ALL
+        runasgroup: ALL
+      - command: /home/dime/purge_db.sh'
+        runasuser: ALL
+        runasgroup: ALL
+  - username: '{{ backup_user }}'
+    commands:
+      - command: '/usr/bin/pg_dumpall --clean'
+        runasuser: postgres
+        runasgroup: postgres
 keepalive_connections: 32

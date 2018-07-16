@@ -1,0 +1,222 @@
+#!/bin/bash
+# Basic Configuration
+
+##set -e
+RESTIC_EXECUTABLE=/usr/local/bin/restic
+RESTIC_REPO=sftp:{{ backup_remote_user }}@{{ backup_remote_host }}:restic/{{ ansible_hostname }}/
+RESTIC_PASSWORD_FILE=/home/{{ backup_user }}/repository-password
+
+WILDFLY_DEPLOY_PATH={{ wildfly_deployments_path }}
+WILDFLY_FILES_PATH={{ wildfly_data_files_path }}
+WILDFLY_LOGS_PATH={{ wildfly_logs_path }}
+DYWA_APP_LOGS_PATH={{ dywa_app_logs_path }}
+PGDUMP_SQL_FILE=pgdump.sql
+
+# wrapper for restic call
+function runRestic {
+  ${RESTIC_EXECUTABLE} -r ${RESTIC_REPO} --password-file ${RESTIC_PASSWORD_FILE} "$@"
+}
+
+# initialize repository
+function doInit {
+  if [[ "${@#--force-init}" != "$@" ]] ;then
+    echo "forcefully creating restic repository at ${RESTIC_REPO}, initializing ..."
+    REPOSITORY_BACKUP=${RESTIC_REPO}
+    if testIt -e ${RESTIC_REPO} ;then
+      if testIt -e ${REPOSITORY_BACKUP}.bak ; then
+        i=0
+        while testIt -e ${REPOSITORY_BACKUP}-${i}.bak ; do
+          let i++
+        done
+        REPOSITORY_BACKUP=${REPOSITORY_BACKUP}-${i}
+      fi
+      echo "Creating backup of previous installed repository at REPOSITORY_BACKUP ..."
+      move ${RESTIC_REPO} ${REPOSITORY_BACKUP}.bak
+    fi
+    runRestic init
+    return 0
+  fi
+  if ! testIt -d ${RESTIC_REPO} ;then
+    (>&2 echo "no restic repository found at ${RESTIC_REPO}, initializing ...")
+    runRestic init
+  else
+    (>&2 echo "restic repository already found at ${RESTIC_REPO}!Use --force-init to override existing repository")
+  fi
+}
+# perform check on repository
+function doCheck {
+  if [[ "${@#--check-data}" != "$@" ]] ; then
+    runRestic check --read-data
+  else
+    runRestic check
+  fi
+  return $?
+}
+
+# perform installation verification
+function doInstallVerification {
+  if [[ ! -x ${RESTIC_EXECUTABLE} ]] ;then
+    (>&2 echo "restic executable not found.");
+    return 127
+  fi
+  if [[ ! -f ${RESTIC_PASSWORD_FILE} ]] ;then
+    (>&2 echo "restic passwordfile not found.");
+    return 240
+  fi
+  if [[ "${@#init}" == "$@" ]] && ! testIt -d ${RESTIC_REPO} ;then
+    (>&2 echo "no repository found at ${RESTIC_REPO}! Did you initialize the repository? ($0 init)")
+    return 1
+  fi
+  return 0
+}
+# perform actual backup
+function doBackup {
+  TAG=$1
+  sudo -u postgres /usr/bin/pg_dumpall --clean | runRestic backup --stdin --stdin-filename ${PGDUMP_SQL_FILE} --tag database --tag "${TAG}"
+  runRestic backup ${WILDFLY_DEPLOY_PATH} --tag wildfly-deployments --tag "${TAG}"
+  runRestic backup ${WILDFLY_FILES_PATH} --tag wildfly-files --tag "${TAG}"
+  runRestic backup ${WILDFLY_LOGS_PATH} --tag wildfly-logs --tag "${TAG}"
+  runRestic backup ${DYWA_APP_LOGS_PATH} --tag equinocs-logs --tag "${TAG}"
+}
+
+# interactive restore
+function doRestore {
+  checkForRestore
+
+  TAG=",complete"
+  if [[ "${@#--revert-restore}" != "$@" ]] ; then
+	TAG=",preRestore"
+  fi
+
+  LATEST_DB_BACKUP=$(runRestic snapshots --tag database"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+  LATEST_WFDEPLOYMENTS_BACKUP=$(runRestic snapshots --tag wildfly-deployments"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+  LATEST_WFFILES_BACKUP=$(runRestic snapshots --tag wildfly-files"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+  LATEST_WFLOG_BACKUP=$(runRestic snapshots --tag wildfly-logs"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+  LATEST_EQLOG_BACKUP=$(runRestic snapshots --tag equinocs-logs"${TAG}" -c --last | tail -n -3| head -n1 | cut -d' ' -f1)
+
+ echo ${LATEST_DB_BACKUP} ${LATEST_WFFILES_BACKUP} ${LATEST_WFLOG_BACKUP}  ${LATEST_EQLOG_BACKUP}
+
+  doBackup preRestore
+
+  if [ ! -z ${LATEST_DB_BACKUP} ] ; then
+    echo restoring database...
+    runRestic dump ${LATEST_DB_BACKUP} |  sudo -u postgres /usr/bin/psql
+  fi
+
+  if [ ! -z ${LATEST_WFDEPLOYMENTS_BACKUP} ] ; then
+    rm ${WILDFLY_DEPLOY_PATH}  --preserve-root -rf
+    echo restoring ${WILDFLY_DEPLOY_PATH}
+    runRestic restore  ${LATEST_WFDEPLOYMENTS_BACKUP} --target /
+  fi
+
+  if [ ! -z ${LATEST_WFFILES_BACKUP} ] ; then
+    echo restoring ${WILDFLY_FILES_PATH}...
+    rm ${WILDFLY_FILES_PATH}  --preserve-root -rf
+    runRestic restore  ${LATEST_WFFILES_BACKUP} --target /
+  fi
+
+  if [ ! -z ${LATEST_WFLOG_BACKUP} ] ; then
+    echo restoring ${LATEST_WFLOG_BACKUP}...
+    rm ${WILDFLY_LOGS_PATH}  --preserve-root -rf
+    runRestic restore  ${LATEST_WFLOG_BACKUP}  --target /
+  fi
+
+  if [ ! -z ${LATEST_EQLOG_BACKUP} ] ; then
+    echo restoring ${LATEST_EQLOG_BACKUP}...
+    rm ${DYWA_APP_LOGS_PATH}  --preserve-root -rf
+    runRestic restore  ${LATEST_EQLOG_BACKUP} --target /
+  fi
+}
+
+# interactive
+function checkForRestore {
+read -e -t 10 -n1 -p "Restoring backup results in removal of existing state. Continue? [y/n]" resume
+case $resume in
+   y|Y|J|j\n) echo ;;
+   *) exit 1;
+esac
+}
+
+# perform cleanup
+function doCleanup {
+  runRestic forget --keep-last 12 --keep-daily 3  --keep-weekly 3 --keep-monthly 1 --keep-yearly 1 --prune
+}
+
+function printHelp {
+
+echo "Usage: $0 [init|backup|cleanup|check|help] [--force-init]
+
+Performs backup and restore operations on specified backup repository.
+
+  init             Initialize a new backup repository, operation is idempotent unless --force-init flag is set.
+  backup           Create a new backup for database,wildfly files and logs.
+  check            Checks the underlying backup repository for consistency.
+  help             Prints this help text.
+  snapshots        Lists all existing snapshots of given repository.
+  restore          restore latest snapshot.
+
+ --revert-restore  Undoes the previous restore operation
+ --force-init      Initilize a new repository even if a valid repository exists.
+               	     A backup of the overwritten repository is created.
+ --check-data      Also check repository data files for inconsistencies.
+
+At least one operation must be given."
+
+}
+
+
+# execute test command on local/remote host
+function testIt {
+if [ $# == 2 ] ;then
+  if [ "${2#sftp:}" != "${2}" ] ; then
+    local HOST=`echo "${2}" | cut -d':' -f2`
+    local TARGETPATH=`echo "${2}" | cut -d':' -f3`
+    ssh -q ${HOST} [ "${1}" "${TARGETPATH}" ]; return $?;
+  else
+    [ ${1} "${2}" ] ; return $?
+  fi
+fi
+return -6
+}
+# execute mv command on local/remote host
+function move {
+if [ $# == 2 ] ;then
+  if [ "${2#sftp:}" != "${2}" ] ; then
+    HOST=`echo "${2}" | cut -d':' -f2`
+    TARGETPATH=`echo "${2}" | cut -d':' -f3`
+    SOURCEPATH=`echo "${1}" | cut -d':' -f3`
+   ssh -q ${HOST} mv "${SOURCEPATH}" "${TARGETPATH}" ; return $?;
+  else
+    mv "${1}" "${2}"  ; return $?
+  fi
+fi
+return -6
+}
+
+## main starts here
+i=1
+  for arg in "$@" ; do
+    case "${arg}" in
+      init|backup|cleanup|check|help|restore|--force-init|--check-data|--revert-restore) ;;
+      snapshots) runRestic snapshots -c;;
+      *) echo  "ignoring unknown operation ${arg}" ; let i++ ;;
+    esac
+  done
+
+echo "$@"
+if [[ $#<${i} ]] || [[ "${@#help}" != "$@" ]]; then
+  printHelp
+  exit
+fi
+
+doInstallVerification "$@"
+
+STATUS=$?
+ [[ ${STATUS} >0 ]] && exit ${STATUS}
+
+
+if [[ "${@#restore}" != "$@" ]] ;then doRestore "$@" exit $? ;fi
+if [[ "${@#init}" != "$@" ]] ;then doInit "$@" ;fi
+if [[ "${@#backup}" != "$@" ]] ;then doBackup "complete" ;fi
+if [[ "${@#cleanup}" != "$@" ]] ;then doCleanup "$@" ;fi
+if [[ "${@#check}" != "$@" ]] ;then doCheck "$@" ;fi

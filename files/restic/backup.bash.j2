@@ -21,7 +21,7 @@ function runRestic {
 function doInit {
   if [[ "${@#--force-init}" != "$@" ]] ;then
     echo "forcefully creating restic repository at ${RESTIC_REPO}, initializing ..."
-    REPOSITORY_BACKUP=${RESTIC_REPO}
+    REPOSITORY_BACKUP=$( echo ${RESTIC_REPO}| sed -e 's;/$;;')
     if testIt -e ${RESTIC_REPO} ;then
       if testIt -e ${REPOSITORY_BACKUP}.bak ; then
         i=0
@@ -30,7 +30,7 @@ function doInit {
         done
         REPOSITORY_BACKUP=${REPOSITORY_BACKUP}-${i}
       fi
-      echo "Creating backup of previous installed repository at REPOSITORY_BACKUP ..."
+      echo "Creating backup of previous installed repository at ${REPOSITORY_BACKUP}.bak ..."
       move ${RESTIC_REPO} ${REPOSITORY_BACKUP}.bak
     fi
     runRestic init

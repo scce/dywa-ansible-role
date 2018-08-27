@@ -28,6 +28,8 @@
     name: '{{ backup_user }}'
     createhome: yes
     shell: /usr/sbin/nologin
+    groups: wildfly
+    append: yes
 
 - name: create ssh folder for backup user
   file:

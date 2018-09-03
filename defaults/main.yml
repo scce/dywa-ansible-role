@@ -18,4 +18,13 @@ sudoers:
       - command: '/usr/bin/pg_dumpall --clean'
         runasuser: postgres
         runasgroup: postgres
+      - command: '/home/{{ backup_user }}/backup --restore *'
+        runasuser: root
+        runasgroup: root
+      - command: '/home/{{ backup_user }}/backup -r *'
+        runasuser: root
+        runasgroup: root
+  defaults:
+    - default: ">root   env_keep+=SSH_AUTH_SOCK"
+
 keepalive_connections: 32

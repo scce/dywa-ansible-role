@@ -57,16 +57,16 @@
 
 - name: install backup script
   template:
-    src: ../files/restic/backup.bash.j2
-    dest: '/home/{{ backup_user }}/backup.bash'
+    src: ../files/restic/backup.j2
+    dest: '/home/{{ backup_user }}/backup'
     owner: '{{ backup_user }}'
     group: '{{ backup_user }}'
     mode: 0500
 
 - name: install repository password file
   template:
-    src: ../files/restic/repository-password.j2
-    dest: '/home/{{ backup_user }}/repository-password'
+    src: ../files/restic/.repository-password.j2
+    dest: '/home/{{ backup_user }}/.repository-password'
     owner: '{{ backup_user }}'
     group: '{{ backup_user }}'
     mode: 0400
@@ -76,18 +76,18 @@
     name: 'restic backup'
     minute: '8'
     hour: '*/6'
-    job: '/home/{{ backup_user }}/backup.bash backup'
+    job: '/home/{{ backup_user }}/backup --backup'
     user: '{{ backup_user }}'
 
 - name: install restic cleanup crontab
   cron:
     name: 'restic cleanup'
     special_time: 'daily'
-    job: '/home/{{ backup_user }}/backup.bash cleanup'
+    job: '/home/{{ backup_user }}/backup --cleanup'
     user: '{{ backup_user }}'
   when: backup_restore_server is undefined
 
 
 
 - name: init restic repository
-  command: "su -s /bin/bash -c '/home/{{ backup_user }}/backup.bash init' {{ backup_user }}"
+  command: "su -s /bin/bash -c '/home/{{ backup_user }}/backup --init' {{ backup_user }}"

@@ -9,4 +9,9 @@
   lineinfile:
     path: /etc/sudoers
     state: absent
-    regexp: '^dime    ALL='
+    regexp: '^dime'
+- name: Remove legacy entries in /etc/sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: absent
+    regexp: '^restic-backup'

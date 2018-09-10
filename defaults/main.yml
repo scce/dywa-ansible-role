@@ -19,10 +19,10 @@ sudoers:
         - command: '/usr/bin/pg_dumpall --clean'
           runasuser: postgres
           runasgroup: postgres
-        - command: '/home/{{ backup_user }}/backup --restore *'
+        - command: '/home/{{ backup_user }}/backup --restore'
           runasuser: root
           runasgroup: root
-        - command: '/home/{{ backup_user }}/backup -r *'
+        - command: '/home/{{ backup_user }}/backup -r'
           runasuser: root
           runasgroup: root
   defaults:

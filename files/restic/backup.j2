@@ -1,5 +1,6 @@
 #!/bin/bash
 # Basic Configuration
+export XDG_CACHE_HOME=~`whoami`/.cache/
 
 ##set -e
 RESTIC_EXECUTABLE=/usr/local/bin/restic
@@ -74,24 +75,24 @@ function doInstallVerification {
 }
 # perform actual backup
 function doBackup {
-  TAG=$1
+  BACKUPTAG=$1
   mkdir -p ${TEMP_BACKUP_FOLDER}
   sudo -u postgres /usr/bin/pg_dumpall --clean > ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE}
-  runRestic backup ${WILDFLY_DEPLOY_PATH} ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE} ${WILDFLY_FILES_PATH} ${WILDFLY_LOGS_PATH} ${DYWA_APP_LOGS_PATH} --tag AIO --tag "${TAG}"
+  runRestic backup ${WILDFLY_DEPLOY_PATH} ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE} ${WILDFLY_FILES_PATH} ${WILDFLY_LOGS_PATH} ${DYWA_APP_LOGS_PATH} --tag AIO --tag "${BACKUPTAG}"
 }
 
 # interactive restore
 function doRestore {
   checkForRestore
 
-  TAG=",complete"
+  TAG="complete"
   if [ ${revertRestore} -eq 1 ] ; then
-	TAG=",preRestore"
+	TAG="preRestore"
   fi
 
   doBackup preRestore
     rm ${TEMP_BACKUP_FOLDER} -rf --preserve-root;
-    runRestic restore ${BACKUP_REVISION_TO_RESTORE} --tag AIO,${TAG} --target /  && sudo -u postgres /usr/bin/psql < ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE};
+    runRestic restore ${BACKUP_REVISION_TO_RESTORE} --tag AIO,${TAG} --target /  && sudo -u postgres /usr/bin/psql < ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE}  && echo "Restore done."
     rm ${TEMP_BACKUP_FOLDER} -rf --preserve-root;
 }
 

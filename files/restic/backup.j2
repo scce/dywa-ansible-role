@@ -1,6 +1,6 @@
 #!/bin/bash
 # Basic Configuration
-export XDG_CACHE_HOME=~`whoami`/.cache/
+export XDG_CACHE_HOME=$(eval echo ~`whoami`/.cache/)
 
 ##set -e
 RESTIC_EXECUTABLE=/usr/local/bin/restic
@@ -13,7 +13,7 @@ WILDFLY_LOGS_PATH={{ wildfly_logs_path }}
 DYWA_APP_LOGS_PATH={{ dywa_app_logs_path }}
 
 PGDUMP_SQL_FILE=pgdump.sql
-TEMP_BACKUP_FOLDER=~/.__BACKUP_/
+TEMP_BACKUP_FOLDER=/home/{{ backup_user }}//.__BACKUP_/
 BACKUP_REVISION_TO_RESTORE=
 
 # wrapper for restic call

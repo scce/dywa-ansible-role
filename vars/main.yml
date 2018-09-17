@@ -41,7 +41,7 @@ postgresql_user_privileges:
     role_attr_flags: 'CREATEDB'     # role attribute flags
 
 
-wildfly_version: '10.1.0.Final'
+wildfly_version: '14.0.1.Final'
 wildfly_download_path: '/tmp/wildfly-{{wildfly_version}}.tar.gz'
 wildfly_home: '/opt/wildfly-{{wildfly_version}}'
 wildfly_bin_path: '{{wildfly_home}}/bin/'

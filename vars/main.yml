@@ -1,5 +1,5 @@
 # Basic settings
-postgresql_version: 9.3
+postgresql_version: 10
 postgresql_encoding: 'UTF-8'
 postgresql_locale: 'en_US.UTF-8'
 postgresql_ctype: 'en_US.UTF-8'
@@ -31,7 +31,7 @@ postgresql_databases:
 postgresql_users:
   - name: '{{dywa_database_user}}'
     pass: '{{dywa_database_password}}'
-    encrypted: no                       # denotes if the password is already encrypted.
+    encrypted: yes                       # denotes if the password is already encrypted.
 
 # List of user privileges to be applied (optional)
 postgresql_user_privileges:

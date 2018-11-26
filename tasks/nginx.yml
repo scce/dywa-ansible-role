@@ -1,7 +1,7 @@
 # install
 - name: install nginx
   apt:
-    name: nginx=1.10.3-0ubuntu0.16.04.2
+    name: nginx
     update_cache: yes
     state: present
 

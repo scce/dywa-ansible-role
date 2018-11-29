@@ -6,7 +6,7 @@
   get_url:
     url: 'https://github.com/restic/restic/releases/download/v{{ restic_version }}/restic_{{ restic_version }}_linux_amd64.bz2'
     dest: '/tmp/restic_{{ restic_version }}_linux_amd64.bz2'
-    checksum: sha256:82c596e4b30f9be61f942b26948a5e51c6910e36073f6c5e531ddca8f60356d1
+    checksum: sha256:3c882962fc07f611a6147ada99c9909770d3e519210fd483cde9609c6bdd900c
   when: restic_stat_result.stat.exists == False
 
 - name: unarchive restic

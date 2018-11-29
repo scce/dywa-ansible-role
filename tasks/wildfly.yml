@@ -58,17 +58,6 @@
     src: ./files/wildfly/postgresql-module.xml
     dest: '{{postgresql_module_file}}'
 
-- name: install ecplipselink
-  get_url:
-    url: http://central.maven.org/maven2/org/eclipse/persistence/eclipselink/2.7.3/eclipselink-2.7.3.jar
-    dest: '{{ecplipselink_folder}}'
-    checksum: md5:d48ac6cf46d518348439ecedc69796e5
-
-- name: copy eclipselink module.xml
-  copy:
-    src: ./files/wildfly/eclipselink-module.xml
-    dest: '{{ecplipselink_module_file}}'
-
 - name: copy standalone.xml
   template:
     src: ./files/wildfly/standalone.xml.j2

@@ -9,7 +9,7 @@ events {
 http {
 {% if allow_access_address is defined %}
     allow {{ allow_access_address }};
-    deny  all;
+    deny all;
 {% endif %}
     sendfile on;
     tcp_nopush on;

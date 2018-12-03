@@ -3,14 +3,14 @@ galaxy_info:
   description: 'Install and configure DyWA with PostgreSQL as database backend and Nginx as proxy'
   issue_tracker_url: https://github.com/scce/dywa-ansible-role/issues
   license: MIT
-  min_ansible_version: 1.9.4
+  min_ansible_version: 2.4
   platforms:
   - name: Ubuntu
     versions:
-    - xenial
+    - bionic
   galaxy_tags:
    - dywa
 dependencies:
   - src: ANXS.postgresql
-    version: 1.9.0
+    version: 1.10.1
     name: ANXS.postgresql

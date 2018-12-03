@@ -7,7 +7,7 @@
   get_url:
     url: '{{dywa_url}}'
     dest: '{{dywa_download_path}}'
-    checksum: md5:aac60f81229972feea9e63cca0cb2ed6
+    checksum: md5:32f69263296d03c31add4af5a768f361
   when: dywa.stat.exists == False
 
 - name: deploy dywa

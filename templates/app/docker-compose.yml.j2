@@ -8,6 +8,9 @@ networks:
   postgres:
   webapp:
 
+volumes:
+  wildfly:
+
 services:
   nginx:
     image: nginx:latest
@@ -54,6 +57,7 @@ services:
     image: scce/dywa-app:latest
     volumes:
       - "./config/dywa-app/standalone.xml:/opt/jboss/wildfly/standalone/configuration/standalone.xml:ro"
+      - "wildfly:/opt/jboss/wildfly/standalone/data/files"
   postgres:
     environment:
       - "POSTGRES_DB=dywa"

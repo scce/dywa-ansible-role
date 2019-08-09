@@ -7,7 +7,7 @@
     - src: standalone.xml.j2
       dest: standalone.xml
 
-- name: Generate webapp config
+- name: Generate nginx webapp config
   template:
     src: 'templates/app/config/webapp/{{ item.src }}'
     dest: '{{ app_root }}/config/webapp/{{ item.dest }}'
@@ -16,7 +16,7 @@
     - src: nginx.conf.j2
       dest: nginx.conf
 
-- name: Generate nginx config
+- name: Generate nginx proxy config
   template:
     src: 'templates/app/config/nginx/{{ item.src }}'
     dest: '{{ app_root }}/config/nginx/{{ item.dest }}'
@@ -24,6 +24,13 @@
   with_items:
     - src: nginx.conf.j2
       dest: nginx.conf
+
+- name: Generate nginx proxy conf.d files
+  template:
+    src: 'templates/app/config/nginx/conf.d/{{ item.src }}'
+    dest: '{{ app_root }}/config/nginx/conf.d/{{ item.dest }}'
+    mode: 0750
+  with_items:
     - src: ssl.conf.j2
       dest: ssl.conf
     - src: webapp.conf.j2

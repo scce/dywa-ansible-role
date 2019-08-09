@@ -1,0 +1,38 @@
+- name: Generate dywa-app config
+  template:
+    src: 'templates/app/config/dywa-app/{{ item.src }}'
+    dest: '{{ app_root }}/config/dywa-app/{{ item.dest }}'
+    mode: 0754
+  with_items:
+    - src: standalone.xml.j2
+      dest: standalone.xml
+
+- name: Generate webapp config
+  template:
+    src: 'templates/app/config/webapp/{{ item.src }}'
+    dest: '{{ app_root }}/config/webapp/{{ item.dest }}'
+    mode: 0750
+  with_items:
+    - src: nginx.conf.j2
+      dest: nginx.conf
+
+- name: Generate nginx config
+  template:
+    src: 'templates/app/config/nginx/{{ item.src }}'
+    dest: '{{ app_root }}/config/nginx/{{ item.dest }}'
+    mode: 0750
+  with_items:
+    - src: nginx.conf.j2
+      dest: nginx.conf
+    - src: ssl.conf.j2
+      dest: ssl.conf
+    - src: webapp.conf.j2
+      dest: webapp.conf
+    - src: dywa-app.conf.j2
+      dest: dywa-app.conf
+
+- name: Generate maven settings
+  template:
+    src: templates/app/maven/settings.xml.j2
+    dest: '{{ app_root }}/maven/settings.xml'
+    mode: 0750

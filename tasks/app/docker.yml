@@ -1,0 +1,24 @@
+- name: Generate docker-compose.yml
+  template:
+    src: templates/app/docker-compose.yml.j2
+    dest: '{{ app_root }}/docker-compose.yml'
+    mode: 0750
+
+- name: Generate docker-compose.migrate.yml
+  template:
+    src: templates/app/docker-compose.migrate.yml.j2
+    dest: '{{ app_root }}/docker-compose.migrate.yml'
+    mode: 0750
+
+- name: Generate Dockerfile-webapp
+  template:
+    src: templates/app/src/Dockerfile-webapp.j2
+    dest: '{{ app_root }}/src/Dockerfile-webapp'
+    mode: 0750
+
+- name: Generate Dockerfile-dywa-app
+  template:
+    src: templates/app/src/Dockerfile-dywa-app.j2
+    dest: '{{ app_root }}/src/Dockerfile-dywa-app'
+    mode: 0750
+

@@ -1,0 +1,42 @@
+- name: 'Create {{ app_root }} directory'
+  file:
+    path: '{{ app_root }}'
+    state: directory
+    mode: 0755
+
+- name: 'Create {{ app_root }}/config directory'
+  file:
+    path: '{{ app_root }}/config'
+    state: directory
+    mode: 0755
+
+- name: 'Create {{ app_root }}/config/nginx directory'
+  file:
+    path: '{{ app_root }}/config/nginx'
+    state: directory
+    mode: 0755
+
+- name: 'Create {{ app_root }}/config/webapp directory'
+  file:
+    path: '{{ app_root }}/config/webapp'
+    state: directory
+    mode: 0755
+
+- name: 'Create {{ app_root }}/config/dywa-app directory'
+  file:
+    path: '{{ app_root }}/config/dywa-app'
+    state: directory
+    mode: 0755
+
+- name: 'Create {{ app_root }}/maven directory'
+  file:
+    path: '{{ app_root }}/maven'
+    state: directory
+    mode: 0755
+
+- name: 'Create {{ app_root }}/src directory'
+  file:
+    path: '{{ app_root }}/src'
+    state: directory
+    mode: 0755
+

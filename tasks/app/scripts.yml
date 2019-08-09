@@ -1,0 +1,23 @@
+- name: Generate start.sh
+  template:
+    src: templates/app/start.sh.j2
+    dest: '{{ app_root }}/start.sh'
+    mode: 0750
+
+- name: Generate migrate.sh
+  template:
+    src: templates/app/migrate.sh.j2
+    dest: '{{ app_root }}/migrate.sh'
+    mode: 0750
+
+- name: Generate build.sh
+  template:
+    src: templates/app/build.sh.j2
+    dest: '{{ app_root }}/build.sh'
+    mode: 0750
+
+- name: Generate restart.sh
+  template:
+    src: templates/app/restart.sh.j2
+    dest: '{{ app_root }}/restart.sh'
+    mode: 0750

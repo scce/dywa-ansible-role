@@ -44,6 +44,8 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_read_timeout 1d;
+        auth_basic              "Protected";
+        auth_basic_user_file    ./htpasswd;
         sub_filter 'src="/'     'src="/mailcatcher/';
         sub_filter 'href="/'    'href="/mailcatcher/';
         sub_filter 'url(/'      'url(/mailcatcher/';

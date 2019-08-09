@@ -38,6 +38,20 @@
     - src: dywa-app.conf.j2
       dest: dywa-app.conf
 
+- name: Install packages for generating htpasswd files
+  become: true
+  apt:
+    name: ['python3-passlib']
+    state: present
+    update_cache: yes
+
+- name: Generate nginx htpasswd file
+  htpasswd:
+    dest: '{{ app_root }}/config/nginx/htpasswd'
+    name: '{{ dywa_http_auth_username }}'
+    password: '{{ dywa_http_auth_password }}'
+    mode: 0754
+
 - name: Generate maven settings
   template:
     src: templates/app/maven/settings.xml.j2

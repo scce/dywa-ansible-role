@@ -57,8 +57,8 @@ services:
   postgres:
     environment:
       - "POSTGRES_DB=dywa"
-      - "POSTGRES_PASSWORD=sa"
-      - "POSTGRES_USER=sa"
+      - "POSTGRES_PASSWORD={{ dywa_database_password }}"
+      - "POSTGRES_USER={{ dywa_database_user }}"
     image: scce/dywa-postgres:latest
     networks:
       - postgres

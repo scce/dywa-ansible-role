@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+SUDO={{ bin_sudo }}
+DOCKER={{ bin_docker }}
+DOCKER_COMPOSE={{ bin_docker_compose }}
+
+function init(){
+    ${SUDO} ${DOCKER_COMPOSE} up -d postgres
+}
+
+function build() {
+    ${SUDO} ${DOCKER} pull scce/dywa:latest && \
+    ${SUDO} ${DOCKER} build -t scce/webapp -f src/Dockerfile-webapp src && \
+    ${SUDO} ${DOCKER} build -t scce/dywa-app -f src/Dockerfile-dywa-app src
+}
+
+function migrate() {
+    ${SUDO} ${DOCKER_COMPOSE} stop dywa-app && \
+    ${SUDO} ${DOCKER_COMPOSE} -f docker-compose.yml -f docker-compose.migrate.yml run --rm migrator && \
+    ${SUDO} chown -R dime:dime /home/dime/app/maven/repository
+}
+
+function restart() {
+    ${SUDO} ${DOCKER_COMPOSE} up -d --no-deps dywa-app webapp nginx
+}
+
+function deploy() {
+    build
+    migrate
+    restart
+}
+
+case "$1" in
+    "-init")
+    init
+    ;;
+    "-build")
+    build
+    ;;
+    "-migrate")
+    migrate
+    ;;
+    "-restart")
+    restart
+    ;;
+    "-deploy")
+    deploy
+    ;;
+    *)
+    echo "Please specify the mode: [\"-init\", \"-build\", \"-migrate\", \"-restart\", \"-deploy\"]"
+    exit 0
+    ;;
+esac

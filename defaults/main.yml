@@ -1,31 +1,10 @@
-sudoers:
-  user_privileges:
-    - username: '{{deployment_user}}'
-      commands:
-        - command: /bin/systemctl start wildfly.service
-          runasuser: ALL
-          runasgroup: ALL
-        - command: /bin/systemctl stop wildfly.service
-          runasuser: ALL
-          runasgroup: ALL
-        - command: /bin/systemctl restart wildfly.service
-          runasuser: ALL
-          runasgroup: ALL
-        - command: /home/dime/purge_db.sh'
-          runasuser: ALL
-          runasgroup: ALL
-    - username: '{{ backup_user }}'
-      commands:
-        - command: '/usr/bin/pg_dumpall --clean'
-          runasuser: postgres
-          runasgroup: postgres
-        - command: '/home/{{ backup_user }}/backup --restore **'
-          runasuser: root
-          runasgroup: root
-        - command: '/home/{{ backup_user }}/backup -r **'
-          runasuser: root
-          runasgroup: root
-  defaults:
-    - ">root   env_keep+=SSH_AUTH_SOCK"
+---
+app_root: /home/dime/app
+bin_docker: /usr/bin/docker
+bin_docker_compose: /usr/local/bin/docker-compose
+bin_sudo: /usr/bin/sudo
+certbot_webroot: /var/www/certbot
+dywa_database_host: postgres
+ssh_port: 22
+wildfly_system_properties: []
 
-keepalive_connections: 32

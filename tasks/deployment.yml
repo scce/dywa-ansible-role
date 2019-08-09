@@ -1,7 +1,0 @@
-- name: add deployment user
-  user:
-    append: true
-    name: '{{deployment_user}}'
-    group: '{{deployment_user}}'
-    groups: wildfly
-    state: present

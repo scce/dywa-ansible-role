@@ -10,7 +10,4 @@ galaxy_info:
     - bionic
   galaxy_tags:
    - dywa
-dependencies:
-  - src: ANXS.postgresql
-    version: 1.10.1
-    name: ANXS.postgresql
+   - docker

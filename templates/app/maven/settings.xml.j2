@@ -1,0 +1,26 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>maven-edu</id>
+            <username>{{ maven_edu_username }}</username>
+            <password>{{ maven_edu_password }}</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>maven-edu</id>
+            <repositories>
+                <repository>
+                    <id>maven-edu</id>
+                    <name>LS5 Internal Maven Repository</name>
+                    <url>https://ls5svn.cs.tu-dortmund.de/maven-edu/</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>maven-edu</activeProfile>
+    </activeProfiles>
+</settings>

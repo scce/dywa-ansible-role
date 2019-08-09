@@ -1,0 +1,20 @@
+- name: 'Allow access to sshd ({{ ssh_port }})'
+  become: true
+  ufw:
+    port: '{{ ssh_port | string }}'
+    rule: allow
+    state: enabled
+
+- name: 'Allow access to http (80)'
+  become: true
+  ufw:
+    port: '80'
+    rule: allow
+    state: enabled
+
+- name: 'Allow access to https (443)'
+  become: true
+  ufw:
+    port: '443'
+    rule: allow
+    state: enabled

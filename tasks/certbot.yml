@@ -1,0 +1,32 @@
+---
+- name: Add CertBot PPA repository
+  become: true
+  apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: Install CertBot
+  become: true
+  apt:
+    name: certbot
+    state: present
+    update_cache: yes
+
+- name: 'Create {{ certbot_webroot }} directory'
+  become: true
+  file:
+    path: '{{ certbot_webroot }}'
+    state: directory
+    mode: 0755
+
+- name: Configure CertBot
+  become: true
+  template:
+    src: ./templates/certbot/cli.ini.j2
+    dest: /etc/letsencrypt/cli.ini
+    mode: 0750
+
+- name: Create initial certificate
+  become: true
+  command: 'certbot certonly --agree-tos -n --standalone'
+  args:
+    creates: '/etc/letsencrypt/live/{{ domain }}'

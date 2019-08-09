@@ -1,0 +1,12 @@
+version: '3.2'
+
+services:
+  migrator:
+    image: maven:3.5.4
+    command: "mvn package -Dde.ls5.dywa.jdbc-connection-url=jdbc:postgresql://postgres:5432/dywa -Dhibernate.dialect=org.hibernate.dialect.PostgreSQLDialect"
+    working_dir: "/usr/src/mymaven/app-dywa-bridge"
+    volumes:
+    - "./maven:/root/.m2"
+    - "./src/dywa-app:/usr/src/mymaven"
+    networks:
+    - postgres

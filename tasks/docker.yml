@@ -1,0 +1,30 @@
+---
+
+- name: Remove legacy docker packages
+  become: true
+  apt:
+    name: ['docker','docker-engine','docker.io','containerd','runc']
+    state: absent
+
+- name: Add Docker GPG key
+  become: true
+  apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+
+- name: Add Docker APT repository
+  become: true
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+
+- name: Install packages for installing docker
+  become: true
+  apt:
+    name: ['apt-transport-https','ca-certificates','curl','gnupg-agent','software-properties-common']
+    state: present
+    update_cache: yes
+
+- name: Install docker
+  become: true
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes

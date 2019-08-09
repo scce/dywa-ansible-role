@@ -1,0 +1,14 @@
+---
+- name: Install packages for installing docker-compose
+  become: true
+  apt:
+    name: ['python3-pip', 'python3-setuptools']
+    state: present
+    update_cache: yes
+
+- name: Install docker-compose
+  become: true
+  pip:
+    executable: /usr/bin/pip3
+    name:
+      - docker-compose>=1.24.1

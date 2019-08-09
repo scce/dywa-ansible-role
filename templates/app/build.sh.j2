@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+{{ bin_sudo }} {{ bin_docker }} pull scce/dywa:latest && \
+    {{ bin_sudo }} {{ bin_docker }} build -t scce/webapp -f src/Dockerfile-webapp src
+    {{ bin_sudo }} {{ bin_docker }} build -t scce/dywa-app -f src/Dockerfile-dywa-app src

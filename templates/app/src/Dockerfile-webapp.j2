@@ -1,0 +1,10 @@
+FROM google/dart:2.4 as dart
+RUN pub global activate webdev
+WORKDIR /app
+COPY ./webapp/pubspec.* /app/
+RUN pub get
+COPY ./webapp /app
+RUN /root/.pub-cache/bin/webdev build
+
+FROM nginx:latest
+COPY --from=dart /app/build /usr/share/nginx/html

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+{{ bin_sudo }} {{ bin_docker_compose }} stop dywa-app && \
+    {{ bin_sudo }} {{ bin_docker_compose }} -f docker-compose.yml -f docker-compose.migrate.yml run --rm migrator && \
+    {{ bin_sudo }} chown -R dime:dime /home/dime/app/maven/repository

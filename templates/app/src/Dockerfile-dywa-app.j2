@@ -1,0 +1,9 @@
+FROM scce/dywa:latest
+# Wildfly path configuration
+ENV WILDFLY_HOME_PATH /opt/jboss/wildfly
+ENV WILDFLY_DEPLOYMENTS_PATH $WILDFLY_HOME_PATH/standalone/deployments
+COPY ./dywa-app/app-presentation/target/app-1.0-SNAPSHOT.war $WILDFLY_DEPLOYMENTS_PATH/
+COPY ./dywa-app/app-dywa-bridge/dywa-bridge/target/app-dywa-bridge-1.0-SNAPSHOT.ear $WILDFLY_DEPLOYMENTS_PATH/
+USER root
+RUN chown -R jboss:jboss $WILDFLY_DEPLOYMENTS_PATH
+USER jboss

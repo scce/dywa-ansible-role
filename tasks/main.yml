@@ -1,8 +1,7 @@
-- import_tasks: packages.yml
-- import_tasks: nginx.yml
-- import_tasks: wildfly.yml
-- import_tasks: dywa.yml
-- import_tasks: deployment.yml
-- import_tasks: logs.yml
-- import_tasks: restic.yml
-- import_tasks: sudoers.yml
+---
+- import_tasks: docker.yml
+- import_tasks: docker-compose.yml
+- import_tasks: ufw.yml
+- import_tasks: certbot.yml
+- import_tasks: app.yml
+

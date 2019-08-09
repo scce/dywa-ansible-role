@@ -31,23 +31,23 @@ function deploy() {
 }
 
 case "$1" in
-    "-init")
+    "--init")
     init
     ;;
-    "-build")
+    "--build")
     build
     ;;
-    "-migrate")
+    "--migrate")
     migrate
     ;;
-    "-restart")
+    "--restart")
     restart
     ;;
-    "-deploy")
+    "--deploy")
     deploy
     ;;
     *)
-    echo "Please specify the mode: [\"-init\", \"-build\", \"-migrate\", \"-restart\", \"-deploy\"]"
+    echo "Please specify the mode: [\"--init\", \"--build\", \"--migrate\", \"--restart\", \"--deploy\"]"
     exit 0
     ;;
 esac

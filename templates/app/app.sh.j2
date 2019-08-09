@@ -5,7 +5,7 @@ DOCKER={{ bin_docker }}
 DOCKER_COMPOSE={{ bin_docker_compose }}
 
 function init(){
-    ${SUDO} ${DOCKER_COMPOSE} up -d postgres
+    ${SUDO} ${DOCKER_COMPOSE} up -d {% if deployment_tier != 'production' %}mailcatcher {% endif %}postgres
 }
 
 function build() {

@@ -5,4 +5,4 @@
   vars:
     ci_testing: true
   roles:
-    - .
+    - ../

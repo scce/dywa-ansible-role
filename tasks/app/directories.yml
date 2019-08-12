@@ -40,6 +40,13 @@
     state: directory
     mode: 0755
 
+- name: 'Create {{ app_root }}/maven/repository/info/scce directory'
+  file:
+    path: '{{ app_root }}/maven/repository/info/scce'
+    recurse: true
+    state: directory
+    mode: 0755
+
 - name: 'Create {{ app_root }}/src directory'
   file:
     path: '{{ app_root }}/src'

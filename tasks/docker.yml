@@ -28,10 +28,3 @@
     name: docker-ce
     state: present
     update_cache: yes
-
-- name: 'Add deploy user {{ deploy_user }} to docker group'
-  become: true
-  user:
-    name: '{{ deploy_user }}'
-    groups: docker
-    append: yes

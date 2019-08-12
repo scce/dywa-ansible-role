@@ -1,0 +1,10 @@
+---
+
+- name: 'Create deploy user ({{ deploy_user }})'
+  become: true
+  user:
+    append: true
+    create_home: true
+    groups: docker
+    name: '{{ deploy_user }}'
+    state: present

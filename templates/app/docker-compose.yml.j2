@@ -14,7 +14,7 @@ volumes:
 
 services:
   nginx:
-    image: nginx:latest
+    image: nginx:{{ nginx_version }}
     networks:
       - dywa-app
 {% if deployment_tier != 'production' %}

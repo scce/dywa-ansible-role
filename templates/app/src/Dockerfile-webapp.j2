@@ -6,5 +6,5 @@ RUN pub get
 COPY ./webapp /app
 RUN /root/.pub-cache/bin/webdev build
 
-FROM nginx:latest
+FROM nginx:{{ nginx_version }}
 COPY --from=dart /app/build /usr/share/nginx/html

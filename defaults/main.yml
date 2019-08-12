@@ -4,6 +4,7 @@ bin_docker: /usr/bin/docker
 bin_docker_compose: /usr/local/bin/docker-compose
 bin_sudo: /usr/bin/sudo
 certbot_webroot: /var/www/certbot
+nginx_version: 1.17.2
 dywa_database_host: postgres
 keepalive_connections: 16
 ssh_port: 22

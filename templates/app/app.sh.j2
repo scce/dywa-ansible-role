@@ -17,7 +17,7 @@ function build() {
 function migrate() {
     ${SUDO} ${DOCKER_COMPOSE} stop dywa-app && \
     ${SUDO} ${DOCKER_COMPOSE} -f docker-compose.yml -f docker-compose.migrate.yml run --rm migrator && \
-    ${SUDO} chown -R dime:dime /home/dime/app/maven/repository
+    ${SUDO} chown -R {{ deploy_user }}:{{ deploy_user }} /home/dime/app/maven/repository
 }
 
 function restart() {

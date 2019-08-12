@@ -1,5 +1,5 @@
 server {
-    listen 80 default_server;
+    listen 80 default_server http2;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -11,7 +11,7 @@ server {
 }
 
 server {
-    listen 443 default_server ssl;
+    listen 443 default_server http2 ssl;
 
     gzip on;
     gzip_min_length 1024;

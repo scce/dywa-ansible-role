@@ -1,6 +1,5 @@
-
 server {
-    listen                  8080 default_server ssl;
+    listen                  8080 default_server http2 ssl;
     client_max_body_size    64m;
 
     location /app/ws/ {
@@ -22,4 +21,5 @@ server {
     location / {
         proxy_pass      http://dywa-app;
     }
+
 }

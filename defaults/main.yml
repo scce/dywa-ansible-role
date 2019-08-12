@@ -6,6 +6,7 @@ bin_sudo: /usr/bin/sudo
 certbot_webroot: /var/www/certbot
 nginx_version: 1.17.2
 dywa_database_host: postgres
+webapp_expires_time: -1
 keepalive_connections: 16
 ssh_port: 22
 wildfly_system_properties: []

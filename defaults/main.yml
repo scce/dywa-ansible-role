@@ -1,4 +1,5 @@
 ---
+ansible_python_interpreter: /usr/bin/python3
 app_root: /home/{{ deploy_user }}/app
 bin_docker: /usr/bin/docker
 bin_docker_compose: /usr/local/bin/docker-compose

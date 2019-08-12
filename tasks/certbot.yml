@@ -30,3 +30,4 @@
   command: 'certbot certonly --agree-tos -n --standalone'
   args:
     creates: '/etc/letsencrypt/live/{{ domain }}'
+  when: ci_testing is undefined

@@ -5,6 +5,7 @@ bin_docker_compose: /usr/local/bin/docker-compose
 bin_sudo: /usr/bin/sudo
 certbot_webroot: /var/www/certbot
 dywa_database_host: postgres
+keepalive_connections: 16
 ssh_port: 22
 wildfly_system_properties: []
 

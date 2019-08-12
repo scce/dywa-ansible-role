@@ -27,5 +27,22 @@ http {
 
     #gzip  on;
 
+    upstream webapp {
+        server webapp;
+        keepalive {{ keepalive_connections }};
+    }
+
+    upstream dywa-app {
+        server dywa-app:8080;
+        keepalive {{ keepalive_connections }};
+    }
+
+{% if deployment_tier != 'production' %}
+    upstream mailcatcher {
+        server mailcatcher:1080;
+    }
+
+{% endif %}
     include /etc/nginx/conf.d/*.conf;
+
 }

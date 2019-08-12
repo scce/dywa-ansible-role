@@ -45,12 +45,20 @@
     state: present
     update_cache: yes
 
-- name: Generate nginx htpasswd file
+- name: Generate nginx htpasswd-dywa file
   htpasswd:
-    dest: '{{ app_root }}/config/nginx/htpasswd'
+    dest: '{{ app_root }}/config/nginx/htpasswd-dywa'
     name: '{{ dywa_http_auth_username }}'
     password: '{{ dywa_http_auth_password }}'
     mode: 0754
+
+- name: Generate nginx htpasswd-mailcatcher file
+  htpasswd:
+    dest: '{{ app_root }}/config/nginx/htpasswd-mailcatcher'
+    name: '{{ mailcatcher_http_auth_username }}'
+    password: '{{ mailcatcher_http_auth_password }}'
+    mode: 0754
+  when: deployment_tier != 'production'
 
 - name: Generate maven settings
   template:

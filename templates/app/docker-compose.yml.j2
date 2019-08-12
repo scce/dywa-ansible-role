@@ -35,7 +35,10 @@ services:
       - "./config/nginx/conf.d/dywa-app.conf:/etc/nginx/conf.d/dywa-app.conf:ro"
       - "./config/nginx/conf.d/ssl.conf:/etc/nginx/conf.d/ssl.conf:ro"
       - "./config/nginx/conf.d/webapp.conf:/etc/nginx/conf.d/webapp.conf:ro"
-      - "./config/nginx/htpasswd:/etc/nginx/htpasswd:ro"
+      - "./config/nginx/htpasswd-dywa:/etc/nginx/htpasswd-dywa:ro"
+{% if deployment_tier != 'production' %}
+      - "./config/nginx/htpasswd-mailcatcher:/etc/nginx/htpasswd-mailcatcher:ro"
+{% endif %}
       - "./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
       - "/etc/letsencrypt:/etc/letsencrypt:ro"
       - "/var/www/certbot:/var/www/certbot:ro"

@@ -5,7 +5,7 @@
   vars:
     ci_testing: true
     # vars to apply role in ci testing environment
-    certbot_mail: john.doe@example.org
+    certbot_email: john.doe@example.org
     deploy_user: root
     domain: app.dywa.example.org
     dywa_database_password: password

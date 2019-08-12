@@ -4,5 +4,15 @@
   remote_user: root
   vars:
     ci_testing: true
+    # vars to apply role in ci testing environment
+    certbot_mail: john.doe@example.org
+    deploy_user: root
+    domain: app.dywa.example.org
+    dywa_database_password: password
+    dywa_database_user: user
+    dywa_http_auth_password: user
+    dywa_http_auth_username: password
+    maven_edu_password: user
+    maven_edu_username: password
   roles:
     - role: '.'

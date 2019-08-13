@@ -25,16 +25,17 @@
     dest: /etc/letsencrypt/cli.ini
     mode: 0750
 
+- name: Create initial certificate
+  become: true
+  command: 'certbot certonly --agree-tos -n --standalone'
+  args:
+    creates: '/etc/letsencrypt/live/{{ domain }}'
+  when: ci_testing is undefined
+
 - name: Create renewal-hook
   become: true
   template:
     src: ./templates/letsencrypt/renewal-hooks/deploy/restart-nginx.sh.j2
     dest: /etc/letsencrypt/renewal-hooks/deploy/restart-nginx.sh
     mode: 0750
-
-- name: Create initial certificate
-  become: true
-  command: 'certbot certonly --agree-tos -n --standalone'
-  args:
-    creates: '/etc/letsencrypt/live/{{ domain }}'
   when: ci_testing is undefined

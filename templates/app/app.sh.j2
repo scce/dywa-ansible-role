@@ -2,10 +2,9 @@
 
 SUDO={{ bin_sudo }}
 DOCKER={{ bin_docker }}
-DOCKER_COMPOSE={{ bin_docker_compose }}
 
 function init(){
-    ${SUDO} ${DOCKER_COMPOSE} up -d {% if deployment_tier != 'production' %}mailcatcher {% endif %}postgres
+    ${SUDO} ${DOCKER} stack deploy --compose-file docker-compose.yml app
 }
 
 function build() {
@@ -15,13 +14,20 @@ function build() {
 }
 
 function migrate() {
-    ${SUDO} ${DOCKER_COMPOSE} stop dywa-app && \
-    ${SUDO} ${DOCKER_COMPOSE} -f docker-compose.yml -f docker-compose.migrate.yml run --rm migrator && \
+    ${SUDO} ${DOCKER} service scale app_dywa-app=0 && \
+    ${DOCKER} run --rm \
+            --network=app_postgres \
+            -v="/home/dime/app/maven:/root/.m2" \
+            -v="/home/dime/app/src/dywa-app:/usr/src/mymaven" \
+            -w="/usr/src/mymaven/app-dywa-bridge" \
+            maven:3.5.4 mvn package -Dde.ls5.dywa.jdbc-connection-url=jdbc:postgresql://{{ dywa_database_host }}:5432/dywa -Dde.ls5.dywa.jdbc-user={{ dywa_database_user }} -Dde.ls5.dywa.jdbc-user={{ dywa_database_password }} -Dhibernate.dialect=org.hibernate.dialect.PostgreSQLDialect && \
     ${SUDO} chown -R {{ deploy_user }}:{{ deploy_user }} /home/dime/app/maven/repository
 }
 
 function restart() {
-    ${SUDO} ${DOCKER_COMPOSE} up -d --no-deps dywa-app webapp nginx
+    ${SUDO} ${DOCKER} service update --force app_webapp && \
+    ${SUDO} ${DOCKER} service scale app_dywa-app=1 && \
+    ${SUDO} ${DOCKER} service update --force app_dywa-app
 }
 
 function deploy() {

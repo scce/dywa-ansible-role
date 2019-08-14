@@ -28,3 +28,7 @@
     name: docker-ce
     state: present
     update_cache: yes
+
+- name: Init a new swarm
+  docker_swarm:
+    state: present

@@ -1,7 +1,6 @@
 ---
 - import_tasks: user.yml
 - import_tasks: docker.yml
-- import_tasks: ufw.yml
 - import_tasks: certbot.yml
 - import_tasks: app/directories.yml
 - import_tasks: app/configs.yml

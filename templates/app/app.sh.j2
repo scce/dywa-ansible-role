@@ -30,6 +30,13 @@ function restart() {
     ${SUDO} ${DOCKER} service update --force app_dywa-app
 }
 
+{% if deployment_tier != 'production' %}
+function remove() {
+    ${SUDO} ${DOCKER} stack remove app
+    ${SUDO} ${DOCKER} volume rm app_postgres app_wildfly
+}
+
+{% endif %}
 function deploy() {
     migrate
     build
@@ -49,11 +56,25 @@ case "$1" in
     "--restart")
     restart
     ;;
+{% if deployment_tier != 'production' %}
+    "--remove")
+    remove
+    ;;
+{% endif %}
     "--deploy")
     deploy
     ;;
     *)
-    echo "Please specify the mode: [\"--init\", \"--build\", \"--migrate\", \"--restart\", \"--deploy\"]"
+    echo "Please specify the mode: [
+        \"--init\",
+        \"--build\",
+        \"--migrate\",
+        \"--restart\",
+{% if deployment_tier != 'production' %}
+        \"--remove\",
+{% endif %}
+        \"--deploy\"
+]"
     exit 0
     ;;
 esac

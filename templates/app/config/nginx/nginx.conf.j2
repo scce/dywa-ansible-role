@@ -11,6 +11,10 @@ events {
 
 
 http {
+{% if allow_access_address is defined %}
+    allow {{ allow_access_address }};
+    deny all;
+{% endif %}
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
 

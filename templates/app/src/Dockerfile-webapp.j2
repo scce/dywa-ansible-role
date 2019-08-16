@@ -8,3 +8,6 @@ RUN /root/.pub-cache/bin/webdev build
 
 FROM nginx:{{ nginx_version }}
 COPY --from=dart /app/build /usr/share/nginx/html
+{% if deployment_tier != 'production' %}
+COPY ./robots.txt /usr/share/nginx/html/
+{% endif %}

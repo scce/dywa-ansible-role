@@ -3,3 +3,15 @@
     src: templates/app/app.sh.j2
     dest: '{{ app_root }}/app.sh'
     mode: 0750
+
+- name: Generate app
+  template:
+    src: templates/app/app.py
+    dest: '{{ app_root }}/app'
+    mode: 0750
+
+- name: Generate app completion
+  template:
+    src: templates/app/bash_completion
+    dest: '{{ user_home }}/.bash_completion'
+    mode: 0750

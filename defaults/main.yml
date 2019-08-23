@@ -1,6 +1,7 @@
 ---
 ansible_python_interpreter: /usr/bin/python3
-app_root: /home/{{ deploy_user }}/app
+user_home: '/home/{{ deploy_user }}'
+app_root: '{{ user_home }}/app'
 bin_docker: /usr/bin/docker
 bin_sudo: /usr/bin/sudo
 certbot_webroot: /var/www/certbot

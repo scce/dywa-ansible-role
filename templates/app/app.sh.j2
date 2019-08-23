@@ -16,11 +16,16 @@ function build() {
 function migrate() {
     ${SUDO} ${DOCKER} service scale app_dywa-app=0 && \
     ${DOCKER} run --rm \
-            --network=app_postgres \
-            -v="{{ app_root }}/maven:/root/.m2" \
-            -v="{{ app_root }}/src/dywa-app:/usr/src/mymaven" \
-            -w="/usr/src/mymaven/app-dywa-bridge" \
-            maven:3.5.4 mvn package -Dde.ls5.dywa.jdbc-connection-url=jdbc:postgresql://{{ dywa_database_host }}:5432/dywa -Dde.ls5.dywa.jdbc-user={{ dywa_database_user }} -Dde.ls5.dywa.jdbc-user={{ dywa_database_password }} -Dhibernate.dialect=org.hibernate.dialect.PostgreSQLDialect && \
+       --network=app_postgres \
+       -v="{{ app_root }}/maven:/root/.m2" \
+       -v="{{ app_root }}/src/dywa-app:/usr/src/mymaven" \
+       -w="/usr/src/mymaven/app-dywa-bridge" \
+       maven:3.5.4 mvn package \
+       -Dde.ls5.dywa.jdbc-connection-url=jdbc:postgresql://{{ dywa_database_host }}:5432/dywa \
+       -Dde.ls5.dywa.jdbc-user={{ dywa_database_user }} \
+       -Dde.ls5.dywa.jdbc-user={{ dywa_database_password }} \
+       -Dhibernate.dialect=org.hibernate.dialect.PostgreSQLDialect \
+       -Ddime.native=$1 && \
     ${SUDO} chown -R {{ deploy_user }}:{{ deploy_user }} {{ app_root }}/maven/repository
 }
 
@@ -38,7 +43,7 @@ function remove() {
 
 {% endif %}
 function deploy() {
-    migrate
+    migrate $1
     build
     restart
 }
@@ -62,7 +67,10 @@ case "$1" in
     ;;
 {% endif %}
     "--deploy")
-    deploy
+    deploy false
+    ;;
+    "--deploy-native")
+    deploy true
     ;;
     *)
     echo "Please specify the mode: [

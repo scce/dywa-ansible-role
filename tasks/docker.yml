@@ -28,21 +28,3 @@
     name: docker-ce
     state: present
     update_cache: yes
-
-- name: Install packages for managing docker
-  become: true
-  apt:
-    name: ['python3-pip', 'python3-setuptools']
-    state: present
-    update_cache: yes
-
-- name: Install docker SDK for python
-  become: true
-  pip:
-    executable: /usr/bin/pip3
-    name:
-      - docker
-
-- name: Init a new swarm
-  docker_swarm:
-    state: present

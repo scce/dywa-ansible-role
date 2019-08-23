@@ -33,9 +33,12 @@ function migrate() {
 }
 
 function restart() {
+    ${SUDO} ${DOCKER} service scale app_webapp=1 && \
     ${SUDO} ${DOCKER} service update --force app_webapp && \
     ${SUDO} ${DOCKER} service scale app_dywa-app=1 && \
-    ${SUDO} ${DOCKER} service update --force app_dywa-app
+    ${SUDO} ${DOCKER} service update --force app_dywa-app && \
+    ${SUDO} ${DOCKER} service scale app_nginx=1 && \
+    ${SUDO} ${DOCKER} service update --force app_nginx
 }
 
 {% if deployment_tier != 'production' %}

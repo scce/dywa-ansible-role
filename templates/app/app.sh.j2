@@ -84,7 +84,8 @@ case "$1" in
 {% if deployment_tier != 'production' %}
         \"--remove\",
 {% endif %}
-        \"--deploy\"
+        \"--deploy\",
+        \"--deploy-native\"
 ]"
     exit 0
     ;;

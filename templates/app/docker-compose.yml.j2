@@ -16,6 +16,8 @@ volumes:
 services:
   nginx:
     image: nginx:{{ nginx_version }}
+    deploy:
+      replicas: 0
     networks:
       - dywa-app
 {% if deployment_tier != 'production' %}
@@ -45,6 +47,8 @@ services:
       - "/var/www/certbot:/var/www/certbot:ro"
   webapp:
     image: scce/webapp:latest
+    deploy:
+        replicas: 0
     networks:
       - webapp
     volumes:
@@ -61,6 +65,8 @@ services:
       - mailcatcher
 {% endif %}
     image: scce/dywa-app:latest
+    deploy:
+        replicas: 0
     volumes:
       - "./config/dywa-app/standalone.xml:/opt/jboss/wildfly/standalone/configuration/standalone.xml:ro"
       - "wildfly:/opt/jboss/wildfly/standalone/data/files"
@@ -70,6 +76,8 @@ services:
       - "POSTGRES_PASSWORD={{ dywa_database_password }}"
       - "POSTGRES_USER={{ dywa_database_user }}"
     image: scce/dywa-postgres:latest
+    deploy:
+        replicas: 1
     networks:
       - postgres
     volumes:
@@ -77,6 +85,8 @@ services:
 {% if deployment_tier != 'production' %}
   mailcatcher:
     image: scce/mailcatcher:latest
+    deploy:
+        replicas: 1
     networks:
       - mailcatcher
 {% endif %}

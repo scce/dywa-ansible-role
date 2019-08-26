@@ -165,6 +165,12 @@
                         <min-pool-size>80</min-pool-size>
                         <max-pool-size>100</max-pool-size>
                     </xa-pool>
+                    <validation>
+                        <check-valid-connection-sql>select 1</check-valid-connection-sql>
+                        <validate-on-match>true</validate-on-match>
+                        <background-validation>false</background-validation>
+                        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+		            </validation>
                 </xa-datasource>
                 <drivers>
                     <driver name="postgresql" module="org.postgresql">
@@ -401,7 +407,7 @@
 		            <filter-ref name="Access-Control-Allow-Credentials"/>
 		            <filter-ref name="Access-Control-Max-Age"/>
                     <filter-ref name="custom-max-age" predicate="path-suffix['.js'] or path-suffix ['.html'] or path-suffix ['.jsp'] or path-suffix ['.css'] or path-suffix ['.jpg'] or path-suffix ['.png'] or path-suffix ['.svg']"/>
-                
+
                 </host>
             </server>
             <servlet-container name="default">

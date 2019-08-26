@@ -24,8 +24,8 @@ class Runner(object):
     def __docker(self, commands):
         Runner.__subprocess([self.docker_path] + commands)
 
-    def __docker_build(self, commands):
-        self.__docker(['build', '-t'] + commands + ['src'])
+    def __docker_build(self, tag, dockerfile):
+        self.__docker(['build', '-t', tag, '-f', dockerfile, 'src'])
 
     def __docker_service(self, commands):
         self.__docker(['service'] + commands)
@@ -35,8 +35,8 @@ class Runner(object):
 
     def build(self):
         self.__docker(['pull', 'scce/dywa:latest'])
-        self.__docker_build(['scce/webapp', 'src/Dockerfile-webapp'])
-        self.__docker_build(['scce/dywa-app', 'src/Dockerfile-dywa-app'])
+        self.__docker_build(tag='scce/webapp', dockerfile='src/Dockerfile-webapp')
+        self.__docker_build(tag='scce/dywa-app', dockerfile='src/Dockerfile-dywa-app')
 
     def migrate(self, native):
         self.__docker_service(['scale', 'app_dywa-app=0'])

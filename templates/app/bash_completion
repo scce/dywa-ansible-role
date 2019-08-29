@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-complete -W "init migrate build deploy restart" app
+complete -W "init migrate build deploy restart remove" app

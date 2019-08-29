@@ -57,7 +57,7 @@ class Runner(object):
                 'package',
                 '-Dde.ls5.dywa.jdbc-connection-url=jdbc:postgresql://%s:5432/dywa' % self.dywa_database_host,
                 '-Dde.ls5.dywa.jdbc-user=%s' % self.dywa_database_user,
-                '-Dde.ls5.dywa.jdbc-user=%s' % self.dywa_database_password,
+                '-Dde.ls5.dywa.jdbc-password=%s' % self.dywa_database_password,
                 '-Dhibernate.dialect=org.hibernate.dialect.PostgreSQLDialect',
                 '-Ddime.native=%s' % ('%s' % native).lower()
             ]

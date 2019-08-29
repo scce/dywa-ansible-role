@@ -26,7 +26,7 @@ function migrate() {
         package \
         -Dde.ls5.dywa.jdbc-connection-url=jdbc:postgresql://{{ dywa_database_host }}:5432/dywa \
         -Dde.ls5.dywa.jdbc-user={{ dywa_database_user }} \
-        -Dde.ls5.dywa.jdbc-user={{ dywa_database_password }} \
+        -Dde.ls5.dywa.jdbc-password={{ dywa_database_password }} \
         -Dhibernate.dialect=org.hibernate.dialect.PostgreSQLDialect \
         -Ddime.native=$1 && \
     ${SUDO} chown -R {{ deploy_user }}:{{ deploy_user }} {{ app_root }}/maven/repository

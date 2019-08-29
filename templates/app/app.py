@@ -30,8 +30,11 @@ class Runner(object):
     def __docker_service(self, commands):
         self.__docker(['service'] + commands)
 
+    def __docker_stack(self, commands):
+        self.__docker(['stack'] + commands)
+
     def init(self):
-        self.__docker(['stack', 'deploy', '--compose-file', 'docker-compose.yml', 'app'])
+        self.__docker_stack(['deploy', '--compose-file', 'docker-compose.yml', 'app'])
 
     def build(self):
         self.__docker(['pull', 'scce/dywa:latest'])
@@ -80,11 +83,16 @@ class Runner(object):
             self.__docker_service(['scale', '%s=1' % service])
             self.__docker_service(['update', '--force', service])
 
+    def remove(self):
+        self.__docker_stack(['remove', 'app'])
+        self.__docker(['volume', 'rm', 'app_postgres', 'app_wildfly'])
+
 
 class App(object):
     """
     Class for handling the command line interface
     """
+    deployment_tier = '{{ deployment_tier }}'
     runner = Runner()
 
     def __init__(self):
@@ -93,11 +101,12 @@ class App(object):
             usage='''app <command> [<args>]
 
 These are common App commands used in various situations:
-   init         Initialize the app stack before you start deploying
-   migrate      Migrate dywa database schema
-   build        Pull latest dywa image and build webapp and dywa-app
-   deploy       Deploy webapp and dywa-app by running build, migrate, restart
-   restart      Restart webapp, dywa-app and nginx
+    init         Initialize the app stack before you start deploying
+    migrate      Migrate dywa database schema
+    build        Pull latest dywa image and build webapp and dywa-app
+    deploy       Deploy webapp and dywa-app by running build, migrate, restart
+    restart      Restart webapp, dywa-app and nginx
+    remove       Remove the app and persisted data
 ''')
         parser.add_argument('command', help='Command to run')
         # parse_args defaults to [1:] for args, but you need to
@@ -121,6 +130,9 @@ These are common App commands used in various situations:
             help='Use native database schema'
         )
         return parser.parse_args(sys.argv[2:]).native
+
+    def __is_production(self):
+        return self.deployment_tier == 'production'
 
     def init(self):
         """
@@ -153,6 +165,15 @@ These are common App commands used in various situations:
         Restart webapp, dywa-app and nginx
         """
         self.runner.restart()
+
+    def remove(self):
+        """
+        Remove the app and persisted data
+        """
+        if self.__is_production():
+            print('Remove not allowed in production')
+            exit(1)
+        self.runner.remove()
 
 
 if __name__ == '__main__':

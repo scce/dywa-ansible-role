@@ -2,7 +2,6 @@
 
 import argparse
 import subprocess
-import sys
 
 
 class Runner(object):
@@ -96,42 +95,90 @@ class App(object):
     runner = Runner()
 
     def __init__(self):
-        parser = argparse.ArgumentParser(
-            description='Script to control the app deployment',
-            usage='''app <command> [<args>]
+        parser = self.create_parser()
+        args = parser.parse_args()
+        self.args = args
+        self.execute_command(parser, args)
 
-These are common App commands used in various situations:
-    init         Initialize the app stack before you start deploying
-    migrate      Migrate dywa database schema
-    build        Pull latest dywa image and build webapp and dywa-app
-    deploy       Deploy webapp and dywa-app by running build, migrate, restart
-    restart      Restart webapp, dywa-app and nginx
-    remove       Remove the app and persisted data
-''')
-        parser.add_argument('command', help='Command to run')
-        # parse_args defaults to [1:] for args, but you need to
-        # exclude the rest of the args too, or validation will fail
-        args = parser.parse_args(sys.argv[1:2])
-        if not hasattr(self, args.command):
-            print('Unrecognized command')
-            parser.print_help()
-            exit(1)
-        # use dispatch pattern to invoke method with same name
-        getattr(self, args.command)()
+    def create_parser(self):
+        parser = argparse.ArgumentParser(description='Script to control the app deployment')
+        subparsers = self.create_subparsers(parser)
+        self.create_init_parser(subparsers)
+        self.create_migrate_parser(subparsers)
+        self.create_build_parser(subparsers)
+        self.create_deploy_parser(subparsers)
+        self.create_restart_parser(subparsers)
+        self.create_remove_parser(subparsers)
+        return parser
 
     @staticmethod
-    def __parse_native_argument():
-        parser = argparse.ArgumentParser(
-            description='Deploy webapp and dywa-app by running build, migrate, restart'
+    def create_subparsers(parser):
+        subparsers = parser.add_subparsers(
+            title='Command to run',
+            dest='command'
         )
-        parser.add_argument(
+        return subparsers
+
+    def create_init_parser(self, subparsers):
+        init_parser = subparsers.add_parser(
+            name="init",
+            help='Initialize the app stack before you start deploying'
+        )
+        init_parser.set_defaults(func=self.init)
+
+    def create_migrate_parser(self, subparsers):
+        migrate_parser = subparsers.add_parser(
+            name="migrate",
+            help='Migrate dywa database schema',
+        )
+        migrate_parser.add_argument(
             '--native',
             action='store_true',
             help='Use native database schema'
         )
-        return parser.parse_args(sys.argv[2:]).native
+        migrate_parser.set_defaults(func=self.migrate)
 
-    def __is_production(self):
+    def create_build_parser(self, subparsers):
+        build_parser = subparsers.add_parser(
+            name="build",
+            help='Pull latest dywa image and build webapp and dywa-app'
+        )
+        build_parser.set_defaults(func=self.build)
+
+    def create_deploy_parser(self, subparsers):
+        deploy_parser = subparsers.add_parser(
+            name="deploy",
+            help='Deploy webapp and dywa-app by running build, migrate, restart',
+        )
+        deploy_parser.add_argument(
+            '--native',
+            action='store_true',
+            help='Use native database schema'
+        )
+        deploy_parser.set_defaults(func=self.deploy)
+
+    def create_restart_parser(self, subparsers):
+        restart_parser = subparsers.add_parser(
+            name="restart",
+            help='Restart webapp, dywa-app and nginx'
+        )
+        restart_parser.set_defaults(func=self.restart)
+
+    def create_remove_parser(self, subparsers):
+        remove_parser = subparsers.add_parser(
+            name="remove",
+            help='Remove the app and persisted data'
+        )
+        remove_parser.set_defaults(func=self.remove)
+
+    @staticmethod
+    def execute_command(parser, args):
+        if not hasattr(args, 'func'):
+            parser.print_help()
+            exit(1)
+        args.func()
+
+    def is_production(self):
         return self.deployment_tier == 'production'
 
     def init(self):
@@ -144,8 +191,7 @@ These are common App commands used in various situations:
         """
         Migrate dywa database schema
         """
-        native = self.__parse_native_argument()
-        self.runner.migrate(native)
+        self.runner.migrate(self.args.native)
 
     def build(self):
         """
@@ -157,8 +203,7 @@ These are common App commands used in various situations:
         """
         Pull latest dywa image and build webapp and dywa-app
         """
-        native = self.__parse_native_argument()
-        self.runner.deploy(native)
+        self.runner.deploy(self.args.native)
 
     def restart(self):
         """
@@ -170,7 +215,7 @@ These are common App commands used in various situations:
         """
         Remove the app and persisted data
         """
-        if self.__is_production():
+        if self.is_production():
             print('Remove not allowed in production')
             exit(1)
         self.runner.remove()

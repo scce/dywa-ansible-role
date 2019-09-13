@@ -1,9 +1,3 @@
-- name: Generate app.sh
-  template:
-    src: templates/app/app.sh.j2
-    dest: '{{ app_root }}/app.sh'
-    mode: 0750
-
 - name: Generate app
   template:
     src: templates/app/app.py

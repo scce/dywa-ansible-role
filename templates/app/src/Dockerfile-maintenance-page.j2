@@ -1,0 +1,12 @@
+FROM google/dart:1.24.3 as dart
+WORKDIR /app
+COPY ./maintenance-page/pubspec.* /app/
+RUN pub get
+COPY ./maintenance-page /app
+RUN pub build --define=local=false
+
+FROM nginx:{{ nginx_version }}
+COPY --from=dart /app/build/web /usr/share/nginx/html
+{% if deployment_tier != 'production' %}
+COPY ./robots.txt /usr/share/nginx/html/
+{% endif %}

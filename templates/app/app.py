@@ -29,6 +29,12 @@ class Runner(object):
     def __docker_service(self, commands):
         self.__docker(['service'] + commands)
 
+    def __docker_service_update(self, commands):
+        self.__docker_service(['update'] + commands)
+
+    def __docker_service_update_image(self, commands):
+        self.__docker_service_update(['--image'] + commands)
+
     def __docker_stack(self, commands):
         self.__docker(['stack'] + commands)
 
@@ -39,6 +45,7 @@ class Runner(object):
         self.__docker(['pull', 'scce/dywa:latest'])
         self.__docker_build(tag='scce/webapp', dockerfile='src/Dockerfile-webapp')
         self.__docker_build(tag='scce/dywa-app', dockerfile='src/Dockerfile-dywa-app')
+        self.__docker_build(tag='scce/maintenance-page', dockerfile='src/Dockerfile-maintenance-page')
 
     def migrate(self, native):
         self.__docker_service(['scale', 'app_dywa-app=0'])
@@ -80,7 +87,13 @@ class Runner(object):
         services = ['app_webapp', 'app_dywa-app', 'app_nginx']
         for service in services:
             self.__docker_service(['scale', '%s=1' % service])
-            self.__docker_service(['update', '--force', service])
+            self.__docker_service_update(['--force', service])
+
+    def maintenance(self, mode):
+        if mode == 'off':
+            self.__docker_service_update_image(['scce/webapp', 'app_webapp'])
+        else:
+            self.__docker_service_update_image(['scce/maintenance-page', 'app_webapp'])
 
     def remove(self):
         self.__docker_stack(['remove', 'app'])
@@ -108,6 +121,7 @@ class App(object):
         self.create_build_parser(subparsers)
         self.create_deploy_parser(subparsers)
         self.create_restart_parser(subparsers)
+        self.create_maintenance_parser(subparsers)
         self.create_remove_parser(subparsers)
         return parser
 
@@ -164,6 +178,18 @@ class App(object):
         )
         restart_parser.set_defaults(func=self.restart)
 
+    def create_maintenance_parser(self, subparsers):
+        restart_parser = subparsers.add_parser(
+            name="maintenance",
+            help='Manage maintenance mode'
+        )
+        restart_parser.add_argument(
+            'mode',
+            type=str,
+            help='Mode can be "on" or "off"'
+        )
+        restart_parser.set_defaults(func=self.maintenance)
+
     def create_remove_parser(self, subparsers):
         remove_parser = subparsers.add_parser(
             name="remove",
@@ -210,6 +236,12 @@ class App(object):
         Restart webapp, dywa-app and nginx
         """
         self.runner.restart()
+
+    def maintenance(self):
+        """
+        Manage maintenance mode
+        """
+        self.runner.maintenance(self.args.mode)
 
     def remove(self):
         """

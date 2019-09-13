@@ -16,6 +16,12 @@
     dest: '{{ app_root }}/src/Dockerfile-dywa-app'
     mode: 0750
 
+- name: Generate Dockerfile-maintenance-page
+  template:
+    src: templates/app/src/Dockerfile-maintenance-page.j2
+    dest: '{{ app_root }}/src/Dockerfile-maintenance-page'
+    mode: 0750
+
 - name: Generate robots.txt
   template:
     src: templates/app/src/robots.txt.j2

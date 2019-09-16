@@ -1,4 +1,4 @@
-FROM google/dart:2.4 as dart
+FROM google/dart:2.4.1 as dart
 RUN pub global activate webdev
 WORKDIR /app
 COPY ./webapp/pubspec.* /app/

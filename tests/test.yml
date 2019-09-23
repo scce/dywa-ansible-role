@@ -17,5 +17,6 @@
     mailcatcher_http_auth_username: password
     maven_edu_password: user
     maven_edu_username: password
+    restic_repo_url: /tmp/restic
   roles:
     - role: '.'

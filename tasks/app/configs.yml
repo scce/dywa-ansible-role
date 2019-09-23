@@ -6,6 +6,8 @@
   with_items:
     - src: standalone.xml.j2
       dest: standalone.xml
+    - src: standalone.conf.j2
+      dest: standalone.conf
 
 - name: Generate nginx webapp config
   template:

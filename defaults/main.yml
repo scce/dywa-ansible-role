@@ -12,3 +12,5 @@ nginx_version: 1.17.2
 ssh_port: 22
 webapp_expires_time: -1
 wildfly_system_properties: []
+wildfly_max_metaspace_size: '2g'
+wildfly_max_memory_allocation_size: '6g'

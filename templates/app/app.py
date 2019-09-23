@@ -15,6 +15,7 @@ class Runner(object):
     dywa_database_host = '{{ dywa_database_host }}'
     dywa_database_user = '{{ dywa_database_user }}'
     dywa_database_password = '{{ dywa_database_password }}'
+    restic_repo_url = '{{ restic_repo_url }}'
 
     @staticmethod
     def __subprocess(commands):
@@ -46,6 +47,28 @@ class Runner(object):
         self.__docker_build(tag='scce/webapp', dockerfile='src/Dockerfile-webapp')
         self.__docker_build(tag='scce/dywa-app', dockerfile='src/Dockerfile-dywa-app')
         self.__docker_build(tag='scce/maintenance-page', dockerfile='src/Dockerfile-maintenance-page')
+
+    def backup(self, command):
+        self.__docker(
+            [
+                'run',
+                '--network=app_postgres',
+                '--rm',
+                '-e=ENV_RESTIC_REPO_URL=%s' % self.restic_repo_url,
+                '-e=PGDATABASE=dywa',
+                '-e=PGHOST=%s' % self.dywa_database_host,
+                '-e=PGPASSWORD=%s' % self.dywa_database_password,
+                '-e=PGUSER=%s' % self.dywa_database_user,
+                '-it',
+                '-v=%s/config/backup/id_rsa:/root/.ssh/id_rsa:ro' % self.app_root,
+                '-v=%s/config/backup/restic-repository-password:/root/.repository-password:ro' % self.app_root,
+                '-v=%s/config/backup/ssh_config:/etc/ssh/ssh_config:ro' % self.app_root,
+                '-v=app_wildfly:/opt/jboss/wildfly/standalone/data/files',
+                '-v=restic-cache:/root/.cache/restic',
+                'scce/dywa-backup',
+                '--%s' % command
+            ]
+        )
 
     def migrate(self, native):
         self.__docker_service(['scale', 'app_dywa-app=0'])
@@ -97,7 +120,7 @@ class Runner(object):
 
     def remove(self):
         self.__docker_stack(['remove', 'app'])
-        self.__docker(['volume', 'rm', 'app_postgres', 'app_wildfly'])
+        self.__docker(['volume', 'rm', 'app_postgres', 'app_wildfly_files'])
 
 
 class App(object):
@@ -119,6 +142,7 @@ class App(object):
         self.create_init_parser(subparsers)
         self.create_migrate_parser(subparsers)
         self.create_build_parser(subparsers)
+        self.create_backup_parser(subparsers)
         self.create_deploy_parser(subparsers)
         self.create_restart_parser(subparsers)
         self.create_maintenance_parser(subparsers)
@@ -135,14 +159,14 @@ class App(object):
 
     def create_init_parser(self, subparsers):
         init_parser = subparsers.add_parser(
-            name="init",
+            name='init',
             help='Initialize the app stack before you start deploying'
         )
         init_parser.set_defaults(func=self.init)
 
     def create_migrate_parser(self, subparsers):
         migrate_parser = subparsers.add_parser(
-            name="migrate",
+            name='migrate',
             help='Migrate dywa database schema',
         )
         migrate_parser.add_argument(
@@ -154,14 +178,24 @@ class App(object):
 
     def create_build_parser(self, subparsers):
         build_parser = subparsers.add_parser(
-            name="build",
+            name='build',
             help='Pull latest dywa image and build webapp and dywa-app'
         )
         build_parser.set_defaults(func=self.build)
 
+    def create_backup_parser(self, subparsers):
+        build_parser = subparsers.add_parser(
+            name='backup',
+        )
+        build_parser.add_argument(
+            'command',
+            type=str,
+        )
+        build_parser.set_defaults(func=self.backup)
+
     def create_deploy_parser(self, subparsers):
         deploy_parser = subparsers.add_parser(
-            name="deploy",
+            name='deploy',
             help='Deploy webapp and dywa-app by running build, migrate, restart',
         )
         deploy_parser.add_argument(
@@ -173,14 +207,14 @@ class App(object):
 
     def create_restart_parser(self, subparsers):
         restart_parser = subparsers.add_parser(
-            name="restart",
+            name='restart',
             help='Restart webapp, dywa-app and nginx'
         )
         restart_parser.set_defaults(func=self.restart)
 
     def create_maintenance_parser(self, subparsers):
         restart_parser = subparsers.add_parser(
-            name="maintenance",
+            name='maintenance',
             help='Manage maintenance mode'
         )
         restart_parser.add_argument(
@@ -192,7 +226,7 @@ class App(object):
 
     def create_remove_parser(self, subparsers):
         remove_parser = subparsers.add_parser(
-            name="remove",
+            name='remove',
             help='Remove the app and persisted data'
         )
         remove_parser.set_defaults(func=self.remove)
@@ -224,6 +258,11 @@ class App(object):
         Deploy webapp and dywa-app by running build, migrate, restart
         """
         self.runner.build()
+
+    def backup(self):
+        """
+        """
+        self.runner.backup(self.args.command)
 
     def deploy(self):
         """

@@ -39,6 +39,15 @@ class Runner(object):
     def __docker_stack(self, commands):
         self.__docker(['stack'] + commands)
 
+    def __docker_scale(self, commands):
+        self.__docker_service(['scale'] + commands)
+
+    def __stop_dywa_app(self):
+        self.__docker_scale(['app_dywa-app=0'])
+
+    def __start_dywa_app(self):
+        self.__docker_scale(['app_dywa-app=1'])
+
     def init(self):
         self.__docker_stack(['deploy', '--compose-file', 'docker-compose.yml', 'app'])
 
@@ -49,7 +58,7 @@ class Runner(object):
         self.__docker_build(tag='scce/maintenance-page', dockerfile='src/Dockerfile-maintenance-page')
 
     def backup(self, command):
-        # todo stop wildfly
+        self.maintenance(mode='on')
         self.__docker(
             [
                 'run',
@@ -70,10 +79,10 @@ class Runner(object):
                 '--%s' % command
             ]
         )
-        # todo start wildfly
+        self.maintenance(mode='off')
 
     def migrate(self, native):
-        self.__docker_service(['scale', 'app_dywa-app=0'])
+        self.__stop_dywa_app()
         self.__docker(
             [
                 'run',
@@ -111,14 +120,16 @@ class Runner(object):
     def restart(self):
         services = ['app_webapp', 'app_dywa-app', 'app_nginx']
         for service in services:
-            self.__docker_service(['scale', '%s=1' % service])
+            self.__docker_scale(['%s=1' % service])
             self.__docker_service_update(['--force', service])
 
     def maintenance(self, mode):
         if mode == 'off':
+            self.__start_dywa_app()
             self.__docker_service_update_image(['scce/webapp', 'app_webapp'])
         else:
             self.__docker_service_update_image(['scce/maintenance-page', 'app_webapp'])
+            self.__stop_dywa_app()
 
     def remove(self):
         self.__docker_stack(['remove', 'app'])

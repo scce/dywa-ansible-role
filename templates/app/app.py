@@ -133,7 +133,7 @@ class Runner(object):
 
     def remove(self):
         self.__docker_stack(['remove', 'app'])
-        self.__docker(['volume', 'rm', 'app_postgres', 'app_wildfly_files'])
+        self.__docker(['volume', 'rm', 'app_postgres', 'app_wildfly'])
 
 
 class App(object):

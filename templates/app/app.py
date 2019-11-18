@@ -49,6 +49,7 @@ class Runner(object):
         self.__docker_build(tag='scce/maintenance-page', dockerfile='src/Dockerfile-maintenance-page')
 
     def backup(self, command):
+        # todo stop wildfly
         self.__docker(
             [
                 'run',
@@ -69,6 +70,7 @@ class Runner(object):
                 '--%s' % command
             ]
         )
+        # todo start wildfly
 
     def migrate(self, native):
         self.__docker_service(['scale', 'app_dywa-app=0'])

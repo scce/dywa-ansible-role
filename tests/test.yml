@@ -18,5 +18,6 @@
     maven_edu_password: user
     maven_edu_username: password
     restic_repo_url: /tmp/restic
+    restic_repository_password: password
   roles:
     - role: '.'

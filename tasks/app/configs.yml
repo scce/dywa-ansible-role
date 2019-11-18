@@ -1,3 +1,12 @@
+- name: Generate restic repository password
+  template:
+    src: 'templates/app/config/backup/{{ item.src }}'
+    dest: '{{ app_root }}/config/backup/{{ item.dest }}'
+    mode: 0700
+  with_items:
+    - src: restic-repository-password.j2
+      dest: restic-repository-password
+
 - name: Generate dywa-app config
   template:
     src: 'templates/app/config/dywa-app/{{ item.src }}'

@@ -9,6 +9,12 @@
     - src: ssh_config.j2
       dest: ssh_config
 
+- name: Copy private key for backup user
+  copy:
+    src: '{{ playbook_dir }}/{{ backup_user_id_rsa_path }}'
+    dest: '{{ app_root }}/config/backup/id_rsa'
+    mode: 0600
+
 - name: Generate dywa-app config
   template:
     src: 'templates/app/config/dywa-app/{{ item.src }}'

@@ -5,6 +5,7 @@
   vars:
     ci_testing: true
     # vars to apply role in ci testing environment
+    backup_remote_host: localhost
     certbot_email: john.doe@example.org
     deploy_user: travis
     deployment_tier: testing

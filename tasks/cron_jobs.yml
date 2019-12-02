@@ -1,0 +1,13 @@
+---
+
+- name: Generate cron jobs files
+  become: true
+  template:
+    src: 'templates/cron.d/{{ item.src }}'
+    dest: '/etc/cron.d/{{ item.dest }}'
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - src: backup.j2
+      dest: backup

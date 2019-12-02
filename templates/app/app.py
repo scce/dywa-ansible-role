@@ -216,6 +216,7 @@ class App(object):
     def create_backup_parser(self, subparsers):
         build_parser = subparsers.add_parser(
             name='backup',
+            help='Perform backup and restore actions'
         )
         build_parser.add_argument(
             'command',

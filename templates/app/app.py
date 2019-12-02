@@ -101,6 +101,29 @@ class Runner(object):
             ]
         )
 
+    def __backup(self, command, arguments=None):
+        if arguments is None:
+            arguments = []
+        self.__docker(
+            [
+                'run',
+                '--network=app_postgres',
+                '--rm',
+                '-e=ENV_RESTIC_REPO_URL=%s' % self.restic_repo_url,
+                '-e=PGDATABASE=dywa',
+                '-e=PGHOST=%s' % self.dywa_database_host,
+                '-e=PGPASSWORD=%s' % self.dywa_database_password,
+                '-e=PGUSER=%s' % self.dywa_database_user,
+                '-v=%s/config/backup/id_rsa:/root/.ssh/id_rsa:ro' % self.app_root,
+                '-v=%s/config/backup/restic-repository-password:/root/.repository-password:ro' % self.app_root,
+                '-v=%s/config/backup/ssh_config:/etc/ssh/ssh_config:ro' % self.app_root,
+                '-v=app_wildfly:/opt/jboss/wildfly/standalone/data/files',
+                '-v=restic-cache:/root/.cache/restic',
+                'scce/dywa-backup',
+                '--%s' % command
+            ] + arguments
+        )
+
     def init(self):
         self.__docker_stack(['deploy', '--compose-file', 'docker-compose.yml', 'app'])
         # build maintenance page so that we can use the maintenance page during initial deployment
@@ -112,28 +135,17 @@ class Runner(object):
         self.__docker_build(tag='scce/dywa-app', dockerfile='src/Dockerfile-dywa-app')
         self.__build_maintenance_page()
 
-    def backup(self, command):
+    def backup(self):
         self.__maintenance_mode_on()
-        self.__docker(
-            [
-                'run',
-                '--network=app_postgres',
-                '--rm',
-                '-e=ENV_RESTIC_REPO_URL=%s' % self.restic_repo_url,
-                '-e=PGDATABASE=dywa',
-                '-e=PGHOST=%s' % self.dywa_database_host,
-                '-e=PGPASSWORD=%s' % self.dywa_database_password,
-                '-e=PGUSER=%s' % self.dywa_database_user,
-                '-it',
-                '-v=%s/config/backup/id_rsa:/root/.ssh/id_rsa:ro' % self.app_root,
-                '-v=%s/config/backup/restic-repository-password:/root/.repository-password:ro' % self.app_root,
-                '-v=%s/config/backup/ssh_config:/etc/ssh/ssh_config:ro' % self.app_root,
-                '-v=app_wildfly:/opt/jboss/wildfly/standalone/data/files',
-                '-v=restic-cache:/root/.cache/restic',
-                'scce/dywa-backup',
-                '--%s' % command
-            ]
-        )
+        self.__backup(command='backup')
+        self.__maintenance_mode_off()
+
+    def snapshots(self):
+        self.__backup(command='snapshots')
+
+    def restore(self):
+        self.__maintenance_mode_on()
+        self.__backup(command='restore', arguments=['latest', '-y'])
         self.__maintenance_mode_off()
 
     def deploy(self, native):
@@ -182,13 +194,15 @@ class App(object):
     def create_parser(self):
         parser = argparse.ArgumentParser(description='Script to control the app deployment')
         subparsers = self.create_subparsers(parser)
-        self.create_init_parser(subparsers)
-        self.create_build_parser(subparsers)
         self.create_backup_parser(subparsers)
+        self.create_build_parser(subparsers)
         self.create_deploy_parser(subparsers)
-        self.create_restart_parser(subparsers)
+        self.create_init_parser(subparsers)
         self.create_maintenance_parser(subparsers)
         self.create_remove_parser(subparsers)
+        self.create_restart_parser(subparsers)
+        self.create_restore_parser(subparsers)
+        self.create_snapshots_parser(subparsers)
         return parser
 
     @staticmethod
@@ -216,13 +230,16 @@ class App(object):
     def create_backup_parser(self, subparsers):
         build_parser = subparsers.add_parser(
             name='backup',
-            help='Perform backup and restore actions'
-        )
-        build_parser.add_argument(
-            'command',
-            type=str,
+            help='Perform backup'
         )
         build_parser.set_defaults(func=self.backup)
+
+    def create_restore_parser(self, subparsers):
+        build_parser = subparsers.add_parser(
+            name='restore',
+            help='Perform restore'
+        )
+        build_parser.set_defaults(func=self.restore)
 
     def create_deploy_parser(self, subparsers):
         deploy_parser = subparsers.add_parser(
@@ -262,6 +279,13 @@ class App(object):
         )
         remove_parser.set_defaults(func=self.remove)
 
+    def create_snapshots_parser(self, subparsers):
+        remove_parser = subparsers.add_parser(
+            name='snapshots',
+            help='Show snapshots in the backup repository'
+        )
+        remove_parser.set_defaults(func=self.snapshots)
+
     @staticmethod
     def execute_command(parser, args):
         if not hasattr(args, 'func'):
@@ -286,8 +310,15 @@ class App(object):
 
     def backup(self):
         """
+        Perform backup
         """
-        self.runner.backup(self.args.command)
+        self.runner.backup()
+
+    def restore(self):
+        """
+        Perform restore
+        """
+        self.runner.restore()
 
     def deploy(self):
         """
@@ -315,6 +346,12 @@ class App(object):
             print('Remove not allowed in production')
             exit(1)
         self.runner.remove()
+
+    def snapshots(self):
+        """
+        Show snapshots in the backup repository
+        """
+        self.runner.snapshots()
 
 
 if __name__ == '__main__':

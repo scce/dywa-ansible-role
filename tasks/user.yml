@@ -8,3 +8,10 @@
     groups: docker
     name: '{{ deploy_user }}'
     state: present
+
+- name: 'Create authorized keys for user ({{ deploy_user }})'
+  authorized_key:
+    user: '{{ deploy_user }}'
+    state: present
+    key: '{{ item }}'
+  with_items: '{{ deploy_user_authorized_keys }}'

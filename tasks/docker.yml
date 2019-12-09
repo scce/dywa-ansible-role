@@ -3,7 +3,7 @@
 - name: Remove legacy docker packages
   become: true
   apt:
-    name: ['docker','docker-engine','docker.io','containerd','runc']
+    name: ['docker', 'docker-engine', 'docker.io', 'containerd', 'runc']
     state: absent
 
 - name: Add Docker GPG key
@@ -18,7 +18,7 @@
 - name: Install packages for installing docker
   become: true
   apt:
-    name: ['apt-transport-https','ca-certificates','curl','gnupg-agent','software-properties-common']
+    name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg-agent', 'software-properties-common']
     state: present
     update_cache: yes
 

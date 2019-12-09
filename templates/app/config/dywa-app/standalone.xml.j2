@@ -145,7 +145,7 @@
             <datasources>
                 <xa-datasource jndi-name="java:/DefaultDS" pool-name="DefaultDS_Pool" enabled="true" use-java-context="true" use-ccm="true">
                     <xa-datasource-property name="ServerName">
-                        {{dywa_database_host}}
+                        {{ dywa_database_host }}
                     </xa-datasource-property>
                     <xa-datasource-property name="PortNumber">
                         5432
@@ -154,10 +154,10 @@
                         dywa
                     </xa-datasource-property>
                     <xa-datasource-property name="User">
-                        {{dywa_database_user}}
+                        {{ dywa_database_user }}
                     </xa-datasource-property>
                     <xa-datasource-property name="Password">
-                        {{dywa_database_password}}
+                        {{ dywa_database_password }}
                     </xa-datasource-property>
                     <driver>postgresql</driver>
                     <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>

@@ -57,4 +57,3 @@
     path: '{{ app_root }}/src'
     state: directory
     mode: 0755
-

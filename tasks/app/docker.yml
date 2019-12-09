@@ -28,4 +28,3 @@
     dest: '{{ app_root }}/src/robots.txt'
     mode: 0754
   when: deployment_tier != 'production'
-

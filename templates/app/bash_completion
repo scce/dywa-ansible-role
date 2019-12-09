@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-complete -W "init backup build deploy restart remove maintenance" app
+complete -W "backup build deploy init maintenance remove restart restore snapshots" app

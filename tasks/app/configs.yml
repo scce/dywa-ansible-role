@@ -1,3 +1,20 @@
+- name: Generate restic repository password
+  template:
+    src: 'templates/app/config/backup/{{ item.src }}'
+    dest: '{{ app_root }}/config/backup/{{ item.dest }}'
+    mode: 0600
+  with_items:
+    - src: restic-repository-password.j2
+      dest: restic-repository-password
+    - src: ssh_config.j2
+      dest: ssh_config
+
+- name: Copy private key for backup user
+  copy:
+    src: '{{ playbook_dir }}/{{ backup_user_id_rsa_path }}'
+    dest: '{{ app_root }}/config/backup/id_rsa'
+    mode: 0600
+
 - name: Generate dywa-app config
   template:
     src: 'templates/app/config/dywa-app/{{ item.src }}'

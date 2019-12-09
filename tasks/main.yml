@@ -7,4 +7,4 @@
 - import_tasks: app/configs.yml
 - import_tasks: app/docker.yml
 - import_tasks: app/scripts.yml
-
+- import_tasks: cron_jobs.yml

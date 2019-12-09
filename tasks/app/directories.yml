@@ -10,6 +10,12 @@
     state: directory
     mode: 0755
 
+- name: 'Create {{ app_root }}/config/backup directory'
+  file:
+    path: '{{ app_root }}/config/backup'
+    state: directory
+    mode: 0755
+
 - name: 'Create {{ app_root }}/config/nginx directory'
   file:
     path: '{{ app_root }}/config/nginx'

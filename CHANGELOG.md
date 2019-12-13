@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0]
+
 ### Added
 - Add --native parameter to app.sh ([#59](https://github.com/scce/dywa-ansible-role/issues/59))
 - Add --remove to app.sh for testing environments ([#54](https://github.com/scce/dywa-ansible-role/issues/54))
@@ -52,4 +54,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolve different permissions and ownership between ansible-role and deployment ([#29](https://github.com/scce/dywa-ansible-role/issues/29))
 - Secure dywa and mailcatcher paths ([#39](https://github.com/scce/dywa-ansible-role/issues/39))
 
-[unreleased]: https://github.com/scce/dywa-ansible-role/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/scce/dywa-ansible-role/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/scce/dywa-ansible-role/compare/v2.0.0...v3.0.0

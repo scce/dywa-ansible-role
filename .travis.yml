@@ -21,9 +21,9 @@ install:
 script:
   - pushd tests
   # Basic role syntax check
-  - ansible-playbook test.yml -i inventory --syntax-check
+  - ansible-playbook test-travis.yml -i inventory --syntax-check
   # Test to apply role
-  - ansible-playbook test.yml -i inventory
+  - ansible-playbook test-travis.yml -i inventory
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

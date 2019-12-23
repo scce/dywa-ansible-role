@@ -1,0 +1,8 @@
+---
+- hosts: travis
+  roles:
+    - role: '.'
+  vars:
+    deploy_user: travis
+  connection: local
+  remote_user: root

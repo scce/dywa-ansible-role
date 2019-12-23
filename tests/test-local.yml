@@ -1,0 +1,6 @@
+---
+- hosts: local
+  roles:
+    - role: '.'
+  vars:
+    deploy_user: vagrant

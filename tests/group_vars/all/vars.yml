@@ -1,0 +1,18 @@
+---
+ci_testing: true
+backup_remote_host: localhost
+backup_user_id_rsa_path: files/id_rsa
+certbot_email: john.doe@example.org
+deploy_user_authorized_keys: []
+deployment_tier: testing
+domain: app.dywa.example.org
+dywa_database_password: password
+dywa_database_user: user
+dywa_http_auth_password: user
+dywa_http_auth_username: password
+mailcatcher_http_auth_password: user
+mailcatcher_http_auth_username: password
+maven_edu_password: user
+maven_edu_username: password
+restic_repo_url: /tmp/restic
+restic_repository_password: password

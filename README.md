@@ -23,6 +23,7 @@ Including an example of how to use your role:
 ## Variables
 
 ```yaml
+    backup_disabled: False
     backup_remote_host: localhost
     backup_user_id_rsa_path: files/id_rsa
     certbot_email: john.doe@example.org

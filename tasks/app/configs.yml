@@ -1,13 +1,8 @@
 - name: Generate restic repository password
   template:
-    src: 'templates/app/config/backup/{{ item.src }}'
-    dest: '{{ app_root }}/config/backup/{{ item.dest }}'
+    src: 'templates/app/config/backup/restic-repository-password.j2'
+    dest: '{{ app_root }}/config/backup/restic-repository-password'
     mode: 0600
-  with_items:
-    - src: restic-repository-password.j2
-      dest: restic-repository-password
-    - src: ssh_config.j2
-      dest: ssh_config
   when: backup_disabled is undefined and backup_disabled != true
 
 - name: Copy private key for backup user
@@ -17,11 +12,18 @@
     mode: 0600
   when: backup_disabled is undefined and backup_disabled != true
 
+- name: Generate ssh_config for backup
+  template:
+    src: 'templates/app/config/backup/ssh_config.j2'
+    dest: '{{ app_root }}/config/backup/ssh_config'
+    mode: 0644
+  when: backup_disabled is undefined and backup_disabled != true
+
 - name: Generate dywa-app config
   template:
     src: 'templates/app/config/dywa-app/{{ item.src }}'
     dest: '{{ app_root }}/config/dywa-app/{{ item.dest }}'
-    mode: 0754
+    mode: 0644
   with_items:
     - src: standalone.xml.j2
       dest: standalone.xml
@@ -32,7 +34,7 @@
   template:
     src: 'templates/app/config/webapp/{{ item.src }}'
     dest: '{{ app_root }}/config/webapp/{{ item.dest }}'
-    mode: 0750
+    mode: 0644
   with_items:
     - src: nginx.conf.j2
       dest: nginx.conf
@@ -41,7 +43,7 @@
   template:
     src: 'templates/app/config/nginx/{{ item.src }}'
     dest: '{{ app_root }}/config/nginx/{{ item.dest }}'
-    mode: 0750
+    mode: 0644
   with_items:
     - src: nginx.conf.j2
       dest: nginx.conf
@@ -50,7 +52,7 @@
   template:
     src: 'templates/app/config/nginx/conf.d/{{ item.src }}'
     dest: '{{ app_root }}/config/nginx/conf.d/{{ item.dest }}'
-    mode: 0750
+    mode: 0644
   with_items:
     - src: ssl.conf.j2
       dest: ssl.conf
@@ -71,18 +73,18 @@
     dest: '{{ app_root }}/config/nginx/htpasswd-dywa'
     name: '{{ dywa_http_auth_username }}'
     password: '{{ dywa_http_auth_password }}'
-    mode: 0754
+    mode: 0644
 
 - name: Generate nginx htpasswd-mailcatcher file
   htpasswd:
     dest: '{{ app_root }}/config/nginx/htpasswd-mailcatcher'
     name: '{{ mailcatcher_http_auth_username }}'
     password: '{{ mailcatcher_http_auth_password }}'
-    mode: 0754
+    mode: 0644
   when: deployment_tier != 'production'
 
 - name: Generate maven settings
   template:
     src: templates/app/maven/settings.xml.j2
     dest: '{{ app_root }}/maven/settings.xml'
-    mode: 0750
+    mode: 0644

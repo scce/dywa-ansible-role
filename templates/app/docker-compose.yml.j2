@@ -14,37 +14,6 @@ volumes:
   postgres:
 
 services:
-  nginx:
-    image: nginx:{{ nginx_version }}
-    deploy:
-      replicas: 0
-    networks:
-      - dywa-app
-{% if deployment_tier != 'production' %}
-      - mailcatcher
-{% endif %}
-      - webapp
-    depends_on:
-      - dywa-app
-{% if deployment_tier != 'production' %}
-      - mailcatcher
-{% endif %}
-      - webapp
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - "./config/nginx/conf.d/dywa-app.conf:/etc/nginx/conf.d/dywa-app.conf:ro"
-      - "./config/nginx/conf.d/ssl.conf:/etc/nginx/conf.d/ssl.conf:ro"
-      - "./config/nginx/conf.d/webapp.conf:/etc/nginx/conf.d/webapp.conf:ro"
-      - "./config/nginx/htpasswd-dywa:/etc/nginx/htpasswd-dywa:ro"
-{% if deployment_tier != 'production' %}
-      - "./config/nginx/htpasswd-mailcatcher:/etc/nginx/htpasswd-mailcatcher:ro"
-{% endif %}
-      - "./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
-      - "/etc/letsencrypt:/etc/letsencrypt:ro"
-      - "/var/www/certbot:/var/www/certbot:ro"
   webapp:
     image: scce/webapp:latest
     deploy:

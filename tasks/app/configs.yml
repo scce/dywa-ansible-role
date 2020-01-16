@@ -54,6 +54,8 @@
   with_items:
     - src: nginx.conf.j2
       dest: nginx.conf
+  notify:
+    - restart nginx
 
 - name: Generate nginx proxy conf.d files
   become: true
@@ -68,6 +70,8 @@
       dest: webapp.conf
     - src: dywa-app.conf.j2
       dest: dywa-app.conf
+  notify:
+    - restart nginx
 
 - name: Install packages for generating htpasswd files
   become: true
@@ -83,6 +87,8 @@
     name: '{{ dywa_http_auth_username }}'
     password: '{{ dywa_http_auth_password }}'
     mode: 0644
+  notify:
+    - restart nginx
 
 - name: Generate nginx htpasswd-mailcatcher file
   become: true
@@ -92,6 +98,8 @@
     password: '{{ mailcatcher_http_auth_password }}'
     mode: 0644
   when: deployment_tier != 'production'
+  notify:
+    - restart nginx
 
 - name: Generate maven settings
   template:

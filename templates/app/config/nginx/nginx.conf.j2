@@ -35,18 +35,18 @@ http {
     #gzip  on;
 
     upstream webapp {
-        server webapp;
+        server localhost:3000;
         keepalive {{ keepalive_connections }};
     }
 
     upstream dywa-app {
-        server dywa-app:8080;
+        server localhost:8080;
         keepalive {{ keepalive_connections }};
     }
 
 {% if deployment_tier != 'production' %}
     upstream mailcatcher {
-        server mailcatcher:1080;
+        server localhost:1080;
     }
 
 {% endif %}

@@ -56,10 +56,8 @@
   with_items:
     - src: ssl.conf.j2
       dest: ssl.conf
-    - src: webapp.conf.j2
-      dest: webapp.conf
-    - src: dywa-app.conf.j2
-      dest: dywa-app.conf
+    - src: app.conf.j2
+      dest: app.conf
 
 - name: Install packages for generating htpasswd files
   become: true

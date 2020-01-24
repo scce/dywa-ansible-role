@@ -59,6 +59,14 @@
     - src: app.conf.j2
       dest: app.conf
 
+- name: Delete old nginx config files
+  file:
+    state: absent
+    path: '{{ app_root }}/config/nginx/conf.d/{{ item }}'
+  with_items:
+    - webapp.conf
+    - dywa-app.conf
+
 - name: Install packages for generating htpasswd files
   become: true
   apt:

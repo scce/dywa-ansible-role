@@ -7,7 +7,6 @@ networks:
 {% endif %}
   postgres:
     attachable: true
-  webapp:
 
 volumes:
   wildfly:
@@ -18,8 +17,6 @@ services:
     image: scce/webapp:latest
     deploy:
         replicas: 0
-    networks:
-      - webapp
     volumes:
       - "./config/webapp/nginx.conf:/etc/nginx/nginx.conf:ro"
     ports:

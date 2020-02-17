@@ -57,9 +57,6 @@ class Runner(object):
     def __start_webapp(self):
         self.__docker_scale(['app_webapp=1'])
 
-    def __start_nginx(self):
-        self.__docker_scale(['app_nginx=1'])
-
     def __maintenance_mode_off(self):
         self.maintenance(mode='off')
 
@@ -154,14 +151,11 @@ class Runner(object):
         self.build()
         self.__update_dywa_app_and_webapp()
         self.__maintenance_mode_off()
-        # for the initial deployment we have to make sure that nginx is started
-        self.__start_nginx()
 
     def restart(self):
         self.__update_dywa_app_and_webapp()
         self.__start_dywa_app()
         self.__start_webapp()
-        self.__start_nginx()
 
     def maintenance(self, mode):
         # for the initial deployment we have to make sure that webapp is started
@@ -256,7 +250,7 @@ class App(object):
     def create_restart_parser(self, subparsers):
         restart_parser = subparsers.add_parser(
             name='restart',
-            help='Restart webapp, dywa-app and nginx'
+            help='Restart webapp and dywa-app'
         )
         restart_parser.set_defaults(func=self.restart)
 
@@ -328,7 +322,7 @@ class App(object):
 
     def restart(self):
         """
-        Restart webapp, dywa-app and nginx
+        Restart webapp and dywa-app
         """
         self.runner.restart()
 

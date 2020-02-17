@@ -40,29 +40,35 @@
       dest: nginx.conf
 
 - name: Generate nginx proxy config
+  become: true
   template:
     src: 'templates/app/config/nginx/{{ item.src }}'
-    dest: '{{ app_root }}/config/nginx/{{ item.dest }}'
+    dest: '/etc/nginx/{{ item.dest }}'
     mode: 0644
   with_items:
     - src: nginx.conf.j2
       dest: nginx.conf
+  notify:
+    - restart nginx
 
 - name: Generate nginx proxy conf.d files
+  become: true
   template:
     src: 'templates/app/config/nginx/conf.d/{{ item.src }}'
-    dest: '{{ app_root }}/config/nginx/conf.d/{{ item.dest }}'
+    dest: '/etc/nginx/conf.d/{{ item.dest }}'
     mode: 0644
   with_items:
     - src: ssl.conf.j2
       dest: ssl.conf
     - src: app.conf.j2
       dest: app.conf
+  notify:
+    - restart nginx
 
 - name: Delete old nginx config files
   file:
     state: absent
-    path: '{{ app_root }}/config/nginx/conf.d/{{ item }}'
+    path: '/etc/nginx/conf.d/{{ item }}'
   with_items:
     - webapp.conf
     - dywa-app.conf
@@ -75,19 +81,25 @@
     update_cache: yes
 
 - name: Generate nginx htpasswd-dywa file
+  become: true
   htpasswd:
-    dest: '{{ app_root }}/config/nginx/htpasswd-dywa'
+    dest: '/etc/nginx/htpasswd-dywa'
     name: '{{ dywa_http_auth_username }}'
     password: '{{ dywa_http_auth_password }}'
     mode: 0644
+  notify:
+    - restart nginx
 
 - name: Generate nginx htpasswd-mailcatcher file
+  become: true
   htpasswd:
-    dest: '{{ app_root }}/config/nginx/htpasswd-mailcatcher'
+    dest: '/etc/nginx/htpasswd-mailcatcher'
     name: '{{ mailcatcher_http_auth_username }}'
     password: '{{ mailcatcher_http_auth_password }}'
     mode: 0644
   when: deployment_tier != 'production'
+  notify:
+    - restart nginx
 
 - name: Generate maven settings
   template:

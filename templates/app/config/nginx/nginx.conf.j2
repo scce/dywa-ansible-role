@@ -1,4 +1,4 @@
-user  nginx;
+user  www-data;
 worker_processes  1;
 
 error_log  /var/log/nginx/error.log warn;
@@ -35,18 +35,18 @@ http {
     #gzip  on;
 
     upstream webapp {
-        server webapp;
+        server 127.0.0.1:3000;
         keepalive {{ keepalive_connections }};
     }
 
     upstream dywa-app {
-        server dywa-app:8080;
+        server 127.0.0.1:8081;
         keepalive {{ keepalive_connections }};
     }
 
 {% if deployment_tier != 'production' %}
     upstream mailcatcher {
-        server mailcatcher:1080;
+        server 127.0.0.1:1080;
     }
 
 {% endif %}

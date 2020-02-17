@@ -1,0 +1,39 @@
+---
+- name: Install mkcert
+  become: true
+  get_url:
+    url: https://github.com/FiloSottile/mkcert/releases/download/{{ mkcert_version }}/mkcert-{{ mkcert_version }}-linux-amd64
+    dest: /usr/sbin/mkcert
+    mode: 0755
+
+- name: Install local CA
+  become: true
+  command: mkcert -install
+  args:
+    creates: /root/.local/share/mkcert/rootCA.pem
+
+- name: Create Directory {{ letsencrypt_live_directory }}
+  become: true
+  file:
+    path: '{{ letsencrypt_live_directory }}'
+    state: directory
+    mode: 0755
+
+- name: Create Directory {{ letsencrypt_live_domain_directory }}
+  become: true
+  file:
+    path: '{{ letsencrypt_live_domain_directory }}'
+    state: directory
+    mode: 0755
+
+- name: Create cert and key
+  become: true
+  command: mkcert -cert-file {{ letsencrypt_live_domain_directory }}/cert.pem -key-file {{ letsencrypt_live_domain_directory }}/privkey.pem {{ domain }}
+  args:
+    creates: '{{ letsencrypt_live_domain_directory }}/*.pem'
+
+- name: Create fullchain
+  become: true
+  shell: cat {{ letsencrypt_live_domain_directory }}/cert.pem /root/.local/share/mkcert/rootCA.pem  > {{ letsencrypt_live_domain_directory }}/fullchain.pem
+  args:
+    creates: '{{ letsencrypt_live_domain_directory }}/fullchain.pem'

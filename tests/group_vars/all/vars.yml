@@ -1,5 +1,6 @@
 ---
 ci_testing: true
+mkcert_version: v1.4.1
 backup_remote_host: localhost
 backup_user_id_rsa_path: files/id_rsa
 certbot_email: john.doe@example.org

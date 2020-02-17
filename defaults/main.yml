@@ -8,6 +8,8 @@ certbot_webroot: /var/www/certbot
 client_max_body_size: 1024
 dywa_database_host: postgres
 keepalive_connections: 16
+letsencrypt_live_directory: '/etc/letsencrypt/live'
+letsencrypt_live_domain_directory: '{{letsencrypt_live_directory }}/{{ domain }}'
 nginx_version: 1.17.2
 ssh_port: 22
 webapp_expires_time: -1

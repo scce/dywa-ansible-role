@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Install nginx as a native os package to avoid a bug in docker swarm ([#70](https://github.com/scce/dywa-ansible-role/issues/70))
 
+### Fixed
+- Change ownerships of dywa-app to deploy user ([#75](https://github.com/scce/dywa-ansible-role/issues/75))
+
 ## [3.0.0]
 
 ### Added

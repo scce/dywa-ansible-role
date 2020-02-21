@@ -94,7 +94,8 @@ class Runner(object):
                 'chown',
                 '-R',
                 '%s:%s' % (self.deploy_user, self.deploy_user),
-                "%s/maven/repository" % self.app_root
+                "%s/maven/repository" % self.app_root,
+                "%s/src/dywa-app" % self.app_root,
             ]
         )
 

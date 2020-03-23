@@ -39,3 +39,10 @@
     dest: /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
     mode: 0750
   when: ci_testing is undefined
+
+- name: Remove old renewal-hook
+  become: true
+  file:
+    path: /etc/letsencrypt/renewal-hooks/deploy/restart-nginx.sh
+    state: absent
+  when: ci_testing is undefined

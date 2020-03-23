@@ -33,6 +33,7 @@ Including an example of how to use your role:
     domain: example.org
     dywa_database_password: password
     dywa_database_user: user
+    dywa_dockerfile_add_on: 'RUN yum install -y texlive-pdftex-bin'
     dywa_http_auth_password: user
     dywa_http_auth_username: password
     mailcatcher_http_auth_password: user

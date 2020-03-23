@@ -35,7 +35,7 @@
 - name: Create renewal-hook
   become: true
   template:
-    src: ./templates/letsencrypt/renewal-hooks/deploy/restart-nginx.sh.j2
-    dest: /etc/letsencrypt/renewal-hooks/deploy/restart-nginx.sh
+    src: ./templates/letsencrypt/renewal-hooks/deploy/reload-nginx.sh.j2
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
     mode: 0750
   when: ci_testing is undefined

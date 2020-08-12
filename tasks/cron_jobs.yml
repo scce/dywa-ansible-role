@@ -11,4 +11,4 @@
   with_items:
     - src: backup.j2
       dest: backup
-  when: backup_disabled is undefined and backup_disabled != true
+  when: backup_enabled == true

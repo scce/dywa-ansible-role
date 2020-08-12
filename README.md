@@ -23,7 +23,7 @@ Including an example of how to use your role:
 ## Variables
 
 ```yaml
-    backup_disabled: False
+    backup_enabled: True
     backup_remote_host: localhost
     backup_user_id_rsa_path: files/id_rsa
     certbot_email: john.doe@example.org
@@ -42,6 +42,7 @@ Including an example of how to use your role:
     maven_edu_username: password
     restic_repo_url: /tmp/restic
     restic_repository_password: password
+    restore_enabled: True
 ```
 
 ## License

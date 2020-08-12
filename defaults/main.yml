@@ -3,6 +3,8 @@ ansible_python_interpreter: /usr/bin/python3
 user_home: '/home/{{ deploy_user }}'
 app_root: '{{ user_home }}/app'
 bin_docker: /usr/bin/docker
+backup_enabled: true
+restore_enabled: true
 bin_sudo: /usr/bin/sudo
 certbot_webroot: /var/www/certbot
 client_max_body_size: 1024

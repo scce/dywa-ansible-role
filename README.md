@@ -34,12 +34,12 @@ Including an example of how to use your role:
     dywa_database_password: password
     dywa_database_user: user
     dywa_dockerfile_add_on: 'RUN yum install -y texlive-pdftex-bin'
-    dywa_http_auth_password: user
-    dywa_http_auth_username: password
-    mailcatcher_http_auth_password: user
-    mailcatcher_http_auth_username: password
-    maven_edu_password: user
-    maven_edu_username: password
+    dywa_http_auth_password: password
+    dywa_http_auth_username: user
+    mailcatcher_http_auth_password: password
+    mailcatcher_http_auth_username: user
+    maven_edu_password: password
+    maven_edu_username: user
     restic_repo_url: /tmp/restic
     restic_repository_password: password
 ```

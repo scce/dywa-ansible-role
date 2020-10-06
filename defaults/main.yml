@@ -13,6 +13,7 @@ keepalive_connections: 16
 letsencrypt_live_directory: '/etc/letsencrypt/live'
 letsencrypt_live_domain_directory: '{{letsencrypt_live_directory }}/{{ domain }}'
 nginx_version: 1.17.2
+proxy_timeout: 300
 ssh_port: 22
 webapp_expires_time: -1
 wildfly_system_properties: []

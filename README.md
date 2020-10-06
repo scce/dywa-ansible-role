@@ -38,6 +38,7 @@ Including an example of how to use your role:
     dywa_http_auth_username: user
     mailcatcher_http_auth_password: password
     mailcatcher_http_auth_username: user
+    proxy_timeout: 300
     maven_edu_password: password
     maven_edu_username: user
     restic_repo_url: /tmp/restic

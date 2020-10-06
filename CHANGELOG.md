@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Enable servers to restore and test backups (#[83](https://github.com/scce/dywa-ansible-role/issues/83))
 - Introduce feature to extend Docker image for dywa app (#[78](https://github.com/scce/dywa-ansible-role/issues/78))
 - Set timeout of nginx and wildfly via variable (#[85](https://github.com/scce/dywa-ansible-role/issues/85))
 

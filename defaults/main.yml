@@ -1,6 +1,5 @@
 ---
 ansible_python_interpreter: /usr/bin/python3
-user_home: '/home/{{ deploy_user }}'
 app_root: '{{ user_home }}/app'
 bin_docker: /usr/bin/docker
 backup_enabled: true
@@ -8,14 +7,18 @@ restore_enabled: true
 bin_sudo: /usr/bin/sudo
 certbot_webroot: /var/www/certbot
 client_max_body_size: 1024
+dywa_app_docker_port: '3001'
 dywa_database_host: postgres
 keepalive_connections: 16
 letsencrypt_live_directory: '/etc/letsencrypt/live'
 letsencrypt_live_domain_directory: '{{letsencrypt_live_directory }}/{{ domain }}'
+mailcatcher_docker_port: '3002'
 nginx_version: 1.17.2
 proxy_timeout: 300
 ssh_port: 22
+user_home: '/home/{{ deploy_user }}'
+webapp_docker_port: '3000'
 webapp_expires_time: -1
-wildfly_system_properties: []
-wildfly_max_metaspace_size: '2g'
 wildfly_max_memory_allocation_size: '6g'
+wildfly_max_metaspace_size: '2g'
+wildfly_system_properties: []

@@ -3,21 +3,21 @@
     src: 'templates/app/config/backup/restic-repository-password.j2'
     dest: '{{ app_root }}/config/backup/restic-repository-password'
     mode: 0600
-  when: backup_disabled is undefined and backup_disabled != true
+  when: backup_enabled == true or restore_enabled == true
 
 - name: Copy private key for backup user
   copy:
     src: '{{ playbook_dir }}/{{ backup_user_id_rsa_path }}'
     dest: '{{ app_root }}/config/backup/id_rsa'
     mode: 0600
-  when: backup_disabled is undefined and backup_disabled != true
+  when: backup_enabled == true or restore_enabled == true
 
 - name: Generate ssh_config for backup
   template:
     src: 'templates/app/config/backup/ssh_config.j2'
     dest: '{{ app_root }}/config/backup/ssh_config'
     mode: 0644
-  when: backup_disabled is undefined and backup_disabled != true
+  when: backup_enabled == true or restore_enabled == true
 
 - name: Generate dywa-app config
   template:

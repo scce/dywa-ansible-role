@@ -94,7 +94,8 @@ class Runner(object):
                 'chown',
                 '-R',
                 '%s:%s' % (self.deploy_user, self.deploy_user),
-                "%s/maven/repository" % self.app_root
+                "%s/maven/repository" % self.app_root,
+                "%s/src/dywa-app" % self.app_root,
             ]
         )
 
@@ -177,6 +178,9 @@ class App(object):
     Class for handling the command line interface
     """
     deployment_tier = '{{ deployment_tier }}'
+    backup_enabled = '{{ backup_enabled }}'
+    restore_enabled = '{{ restore_enabled }}'
+
     runner = Runner()
 
     def __init__(self):
@@ -306,12 +310,18 @@ class App(object):
         """
         Perform backup
         """
+        if self.backup_enabled != 'True':
+            print('Backup not enabled')
+            exit(1)
         self.runner.backup()
 
     def restore(self):
         """
         Perform restore
         """
+        if self.restore_enabled != 'True':
+            print('Restore not enabled')
+            exit(1)
         self.runner.restore()
 
     def deploy(self):

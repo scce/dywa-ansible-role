@@ -23,7 +23,7 @@ Including an example of how to use your role:
 ## Variables
 
 ```yaml
-    backup_disabled: False
+    backup_enabled: True
     backup_remote_host: localhost
     backup_user_id_rsa_path: files/id_rsa
     certbot_email: john.doe@example.org
@@ -33,14 +33,17 @@ Including an example of how to use your role:
     domain: example.org
     dywa_database_password: password
     dywa_database_user: user
-    dywa_http_auth_password: user
-    dywa_http_auth_username: password
-    mailcatcher_http_auth_password: user
-    mailcatcher_http_auth_username: password
-    maven_edu_password: user
-    maven_edu_username: password
+    dywa_dockerfile_add_on: 'RUN yum install -y texlive-pdftex-bin'
+    dywa_http_auth_password: password
+    dywa_http_auth_username: user
+    mailcatcher_http_auth_password: password
+    mailcatcher_http_auth_username: user
+    proxy_timeout: 300
+    maven_edu_password: password
+    maven_edu_username: user
     restic_repo_url: /tmp/restic
     restic_repository_password: password
+    restore_enabled: True
 ```
 
 ## License

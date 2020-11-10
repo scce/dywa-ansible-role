@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Install nginx as a native os package to avoid a bug in docker swarm ([#70](https://github.com/scce/dywa-ansible-role/issues/70))
+- Use exposed ports for docker services below 8000 ([#81](https://github.com/scce/dywa-ansible-role/issues/81))
 - Use https 443 port for dywa-app ([#73](https://github.com/scce/dywa-ansible-role/issues/73))
 
 ### Fixed

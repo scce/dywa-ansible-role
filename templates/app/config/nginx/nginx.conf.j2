@@ -35,18 +35,18 @@ http {
     #gzip  on;
 
     upstream webapp {
-        server 127.0.0.1:3000;
+        server 127.0.0.1:{{ webapp_docker_port }};
         keepalive {{ keepalive_connections }};
     }
 
     upstream dywa-app {
-        server 127.0.0.1:8081;
+        server 127.0.0.1:{{ dywa_app_docker_port }};
         keepalive {{ keepalive_connections }};
     }
 
 {% if deployment_tier != 'production' %}
     upstream mailcatcher {
-        server 127.0.0.1:1080;
+        server 127.0.0.1:{{ mailcatcher_docker_port }};
     }
 
 {% endif %}

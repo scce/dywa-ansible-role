@@ -66,6 +66,7 @@
     - restart nginx
 
 - name: Delete old nginx config files
+  become: true
   file:
     state: absent
     path: '/etc/nginx/conf.d/{{ item }}'

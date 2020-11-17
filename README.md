@@ -1,4 +1,4 @@
-# SCCE / DyWA Ansible Role [![Build Status](https://api.travis-ci.org/scce/dywa-ansible-role.svg?branch=master)](https://travis-ci.org/sce/dywa-ansible-role)
+# SCCE / DyWA Ansible Role [![Build Status](https://api.travis-ci.org/scce/dywa-ansible-role.svg?branch=master)](https://travis-ci.org/scce/dywa-ansible-role)
 
 Ansible role which installs and configures DyWA with PostgreSQL as database backend and Nginx as proxy.
 

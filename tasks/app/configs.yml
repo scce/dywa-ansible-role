@@ -65,6 +65,16 @@
   notify:
     - restart nginx
 
+- name: Generate nginx proxy services file
+  become: true
+  template:
+    src: 'templates/app/config/nginx/conf.d/services.conf.j2'
+    dest: '/etc/nginx/conf.d/services.conf'
+    mode: 0644
+  notify:
+    - restart nginx
+  when: services|length > 0
+
 - name: Delete old nginx config files
   become: true
   file:

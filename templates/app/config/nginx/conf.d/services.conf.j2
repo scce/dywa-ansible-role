@@ -1,0 +1,9 @@
+{% for service in services %}
+server {
+    listen {{ service.external_port }} http2 ssl;
+
+    location / {
+        proxy_pass  http://{{ service.name }};
+    }
+}
+{% endfor %}

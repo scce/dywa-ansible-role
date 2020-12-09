@@ -44,6 +44,12 @@ http {
         keepalive {{ keepalive_connections }};
     }
 
+{% for service in services %}
+    upstream {{ service.name }} {
+        server 127.0.0.1:{{ service.internal_port }};
+    }
+{% endfor %}
+
 {% if deployment_tier != 'production' %}
     upstream mailcatcher {
         server 127.0.0.1:{{ mailcatcher_docker_port }};

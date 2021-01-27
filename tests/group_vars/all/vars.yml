@@ -11,6 +11,7 @@ dywa_database_password: password
 dywa_database_user: user
 dywa_http_auth_password: user
 dywa_http_auth_username: password
+https: false
 mailcatcher_http_auth_password: user
 mailcatcher_http_auth_username: password
 maven_edu_password: user

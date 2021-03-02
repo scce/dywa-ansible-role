@@ -11,6 +11,11 @@ networks:
 volumes:
   wildfly:
   postgres:
+{% for service in services %}
+{% for volume in service.volumes %}
+  {{ volume.source }}:
+{% endfor %}
+{% endfor %}
 
 services:
   webapp:
@@ -53,6 +58,24 @@ services:
       - postgres
     volumes:
       - "postgres:/var/lib/postgresql/data"
+{% for service in services %}
+  {{ service.name }}:
+    networks:
+{% for network in service.networks %}
+      - {{ network }}
+{% endfor %}
+    image: {{ service.image_repository }}:{{ service.image_tag }}
+    deploy:
+        replicas: 1
+    volumes:
+{% for volume in service.volumes %}
+      - type: volume
+        source: {{ volume.source }}
+        target: {{ volume.target }}
+{% endfor %}
+    ports:
+      - "{{ service.internal_port }}:{{ service.container_port }}"
+{% endfor %}
 {% if deployment_tier != 'production' %}
   mailcatcher:
     image: scce/mailcatcher:latest

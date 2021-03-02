@@ -23,3 +23,4 @@ wildfly_max_memory_allocation_size: '6g'
 wildfly_max_metaspace_size: '2g'
 wildfly_system_properties: []
 https: true
+services: []

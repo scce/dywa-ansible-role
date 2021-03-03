@@ -3,8 +3,9 @@
 - import_tasks: user.yml
 - import_tasks: docker_swarm.yml
 - import_tasks: certbot.yml
+  when: https
 - import_tasks: mkcert.yml
-  when: ci_testing is defined
+  when: https and ci_testing is defined
 - import_tasks: reverse_proxy.yml
 - import_tasks: app/directories.yml
 - import_tasks: app/configs.yml

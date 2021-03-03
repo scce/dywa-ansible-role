@@ -51,7 +51,19 @@
   notify:
     - restart nginx
 
-- name: Generate nginx proxy conf.d files
+- name: Generate nginx proxy app config
+  become: true
+  template:
+    src: 'templates/app/config/nginx/conf.d/{{ item.src }}'
+    dest: '/etc/nginx/conf.d/{{ item.dest }}'
+    mode: 0644
+  with_items:
+    - src: app.conf.j2
+      dest: app.conf
+  notify:
+    - restart nginx
+
+- name: Generate nginx proxy ssl config
   become: true
   template:
     src: 'templates/app/config/nginx/conf.d/{{ item.src }}'
@@ -60,10 +72,9 @@
   with_items:
     - src: ssl.conf.j2
       dest: ssl.conf
-    - src: app.conf.j2
-      dest: app.conf
   notify:
     - restart nginx
+  when: https
 
 - name: Generate nginx proxy services file
   become: true

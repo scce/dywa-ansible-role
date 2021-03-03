@@ -1,6 +1,7 @@
 server {
     listen 80 default_server;
 
+{% if https %}
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
     }
@@ -12,6 +13,7 @@ server {
 
 server {
     listen 443 default_server http2 ssl;
+{% endif %}
     client_max_body_size {{ client_max_body_size }};
 
     gzip on;
